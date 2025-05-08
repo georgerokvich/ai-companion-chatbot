@@ -5,10 +5,10 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// Using SQLite for local demo
+// Using SQLite for the demo
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
+  url      = "file:./dev.db"
 }
 
 model User {

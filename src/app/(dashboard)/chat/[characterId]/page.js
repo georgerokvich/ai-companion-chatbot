@@ -4,9 +4,9 @@ import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { trpc } from '@/lib/trpc/client';
 
-// @ts-ignore - Skip type checking for this component
+// Using JavaScript instead of TypeScript for compatibility
 export default function ChatPage(props) {
-  // Extract characterId from props using JavaScript instead of TypeScript typing
+  // Extract characterId from props
   const characterId = props.params?.characterId || '';
   
   const router = useRouter();

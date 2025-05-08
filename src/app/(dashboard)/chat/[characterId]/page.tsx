@@ -4,7 +4,13 @@ import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { trpc } from '@/lib/trpc/client';
 
-export default function ChatPage({ params }: { params: { characterId: string } }) {
+interface PageProps {
+  params: {
+    characterId: string;
+  };
+}
+
+export default function ChatPage({ params }: PageProps) {
   const { characterId } = params;
   const router = useRouter();
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -169,7 +175,7 @@ export default function ChatPage({ params }: { params: { characterId: string } }
     return (
       <div className="flex flex-col items-center justify-center flex-1 p-8">
         <h2 className="text-2xl font-bold text-gray-800">Character not found</h2>
-        <p className="mt-2 text-gray-600">This character doesn't exist or you don't have access to it.</p>
+        <p className="mt-2 text-gray-600">This character does not exist or you do not have access to it.</p>
         <button
           onClick={() => router.push('/dashboard')}
           className="px-4 py-2 mt-4 text-white bg-purple-500 rounded-md hover:bg-purple-600"

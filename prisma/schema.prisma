@@ -1,0 +1,64 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Using SQLite for local demo
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String      @id @default(uuid())
+  email         String      @unique
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  characters    Character[]
+  chats         Chat[]
+}
+
+model Character {
+  id            String      @id @default(uuid())
+  name          String
+  description   String
+  personality   String
+  avatar        String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chats         Chat[]
+}
+
+model Chat {
+  id            String      @id @default(uuid())
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  characterId   String
+  character     Character   @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  messages      Message[]
+  images        Image[]
+}
+
+model Message {
+  id            String      @id @default(uuid())
+  content       String
+  role          String      // "user" or "assistant"
+  createdAt     DateTime    @default(now())
+  chatId        String
+  chat          Chat        @relation(fields: [chatId], references: [id], onDelete: Cascade)
+}
+
+model Image {
+  id            String      @id @default(uuid())
+  url           String
+  prompt        String
+  createdAt     DateTime    @default(now())
+  chatId        String
+  chat          Chat        @relation(fields: [chatId], references: [id], onDelete: Cascade)
+}

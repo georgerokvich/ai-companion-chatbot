@@ -11,10 +11,18 @@ export default function ChatPage(props) {
   
   const router = useRouter();
   const messagesEndRef = useRef(null);
+  const inputRef = useRef(null);
   
   const [input, setInput] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [generatingImage, setGeneratingImage] = useState(false);
+  
+  // Add focus handling for input field
+  const focusInput = () => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  };
 
   // Get character info
   const characterQuery = trpc.character.getById.useQuery(
@@ -70,6 +78,15 @@ export default function ChatPage(props) {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatQuery.data?.messages]);
+  
+  // Focus the input field when the component mounts
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      focusInput();
+    }, 500);
+    
+    return () => clearTimeout(timer);
+  }, [chatId]);
 
   // Handle sending message
   const handleSendMessage = async (e) => {
@@ -270,12 +287,22 @@ export default function ChatPage(props) {
 
       {/* Input area */}
       <div className="chat-input">
-        <form onSubmit={handleSendMessage} className="input-form">
+        <form 
+          onSubmit={handleSendMessage} 
+          className="input-form"
+          onClick={focusInput}
+        >
           <button
             type="button"
             onClick={handleGenerateImage}
             disabled={generatingImage || !chatId}
             className="input-image"
+            style={{
+              zIndex: 999,
+              position: 'relative',
+              pointerEvents: 'auto',
+              cursor: 'pointer'
+            }}
           >
             {generatingImage ? (
               <div className="w-5 h-5 border-2 border-gray-300 border-t-primary rounded-full animate-spin"></div>
@@ -287,18 +314,32 @@ export default function ChatPage(props) {
           </button>
           
           <input
+            ref={inputRef}
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             disabled={isSubmitting || !chatId}
             placeholder={`Message ${character.name}...`}
             className="input-field"
+            style={{
+              zIndex: 999,
+              position: 'relative',
+              pointerEvents: 'auto',
+              cursor: 'text'
+            }}
+            onClick={(e) => e.stopPropagation()}
           />
           
           <button
             type="submit"
             disabled={isSubmitting || !input.trim() || !chatId}
             className="input-send"
+            style={{
+              zIndex: 999,
+              position: 'relative',
+              pointerEvents: 'auto',
+              cursor: 'pointer'
+            }}
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />

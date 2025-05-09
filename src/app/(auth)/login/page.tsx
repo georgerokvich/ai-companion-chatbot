@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { supabase } from '@/lib/supabase/client';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -19,21 +18,17 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) {
-        throw error;
-      }
-
-      // Redirect to dashboard on successful login
-      router.push('/dashboard');
-      router.refresh();
+      // Demo mode - just simulate success
+      // Store login info in localStorage for persistence in demo
+      localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('userEmail', email);
+      
+      // Redirect to dashboard
+      setTimeout(() => {
+        router.push('/dashboard');
+      }, 1000);
     } catch (error: any) {
-      setError(error.message || 'Login failed. Please try again.');
-    } finally {
+      setError('Login failed. Please try again.');
       setLoading(false);
     }
   };

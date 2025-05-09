@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { supabase } from '@/lib/supabase/client';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -19,21 +18,17 @@ export default function RegisterPage() {
     setError(null);
 
     try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-      });
-
-      if (error) {
-        throw error;
-      }
-
-      // For demo purposes, go directly to login
-      router.push('/login');
-      alert('Demo account created! You can now log in.');
+      // Demo mode - just simulate success
+      // Store login info in localStorage for persistence in demo
+      localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('userEmail', email);
+      
+      // Redirect to dashboard
+      setTimeout(() => {
+        router.push('/dashboard');
+      }, 1000);
     } catch (error: any) {
-      setError(error.message || 'Registration failed. Please try again.');
-    } finally {
+      setError('Registration failed. Please try again.');
       setLoading(false);
     }
   };

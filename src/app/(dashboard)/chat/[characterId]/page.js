@@ -16,6 +16,8 @@ export default function ChatPage(props) {
   const [input, setInput] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [generatingImage, setGeneratingImage] = useState(false);
+  const [localMessages, setLocalMessages] = useState([]);
+  const [character, setCharacter] = useState(null);
   
   // Add focus handling for input field
   const focusInput = () => {
@@ -33,35 +35,514 @@ export default function ChatPage(props) {
       onError: () => {
         router.push('/dashboard');
       },
+      onSuccess: (data) => {
+        setCharacter(data);
+      }
     }
   );
 
-  // Create or get existing chat
-  const createChatMutation = trpc.chat.create.useMutation();
-  const [chatId, setChatId] = useState(null);
-  
+  // Scroll to bottom on new messages
   useEffect(() => {
-    const initChat = async () => {
-      if (characterId && !chatId) {
-        const newChat = await createChatMutation.mutateAsync({ characterId });
-        setChatId(newChat.id);
-      }
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [localMessages]);
+  
+  // Focus the input field when the component mounts
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      focusInput();
+    }, 500);
+    
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Generate a unique ID for messages
+  const generateId = () => {
+    return 'msg_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
+  };
+
+  // Simplified send message function that doesn't rely on tRPC
+  const handleSendMessage = () => {
+    if (!input.trim() || isSubmitting) return;
+    
+    console.log('Sending message:', input);
+    const messageText = input.trim();
+    setInput('');
+    setIsSubmitting(true);
+    
+    // Add user message to local state
+    const userMessage = {
+      id: generateId(),
+      content: messageText,
+      role: 'user',
+      createdAt: new Date()
     };
     
-    initChat();
-  }, [characterId, chatId, createChatMutation]);
+    setLocalMessages(prevMessages => [...prevMessages, userMessage]);
+    
+    // Simulate AI response after a delay
+    setTimeout(() => {
+      const responses = [
+        "I'm so happy to chat with you! How can I make your day better?",
+        "That's an interesting thought. Tell me more about it!",
+        "I've been thinking about that too. What do you think about this topic?",
+        "I love your perspective on things. You're really insightful!",
+        "That's fascinating! I'd love to explore this idea more with you.",
+      ];
+      
+      const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+      
+      const aiMessage = {
+        id: generateId(),
+        content: randomResponse,
+        role: 'assistant',
+        createdAt: new Date()
+      };
+      
+      setLocalMessages(prevMessages => [...prevMessages, aiMessage]);
+      setIsSubmitting(false);
+      
+      // Re-focus the input
+      setTimeout(focusInput, 100);
+    }, 1500);
+  };
 
-  // Get chat messages
-  const chatQuery = trpc.chat.getById.useQuery(
-    { id: chatId },
-    {
-      enabled: !!chatId,
-      refetchInterval: 1000, // Poll for new messages
-    }
+  // Handle generating image - simplified
+  const handleGenerateImage = () => {
+    if (generatingImage) return;
+    
+    setGeneratingImage(true);
+    
+    // Generate a random image
+    setTimeout(() => {
+      const imageUrl = `https://placekitten.com/500/${400 + Math.floor(Math.random() * 200)}`;
+      
+      const imageMessage = {
+        id: generateId(),
+        type: 'image',
+        url: imageUrl,
+        prompt: "Generated image for you!",
+        createdAt: new Date()
+      };
+      
+      setLocalMessages(prevMessages => [...prevMessages, imageMessage]);
+      setGeneratingImage(false);
+    }, 1500);
+  };
+
+  // Loading state
+  if (characterQuery.isLoading) {
+    return (
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100vh',
+        background: '#0d0d1b'
+      }}>
+        <div style={{
+          width: '64px',
+          height: '64px',
+          borderRadius: '50%',
+          borderTop: '4px solid #ff4fa7',
+          borderRight: '4px solid transparent',
+          borderBottom: '4px solid transparent',
+          borderLeft: '4px solid transparent',
+          animation: 'spin 1s linear infinite'
+        }}></div>
+      </div>
+    );
+  }
+
+  // Character not found
+  if (!character && !characterQuery.isLoading) {
+    return (
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100vh',
+        padding: '2rem',
+        background: '#0d0d1b',
+        color: 'white'
+      }}>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Character not found</h2>
+        <p style={{ color: 'rgba(255,255,255,0.7)', marginBottom: '1.5rem' }}>This character does not exist or you do not have access to it.</p>
+        <button
+          onClick={() => router.push('/dashboard')}
+          style={{
+            padding: '0.5rem 1rem',
+            background: '#ff4fa7',
+            color: 'white',
+            border: 'none',
+            borderRadius: '0.5rem',
+            cursor: 'pointer'
+          }}
+        >
+          Back to Dashboard
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ 
+      display: 'flex', 
+      flexDirection: 'column',
+      height: '100vh',
+      background: '#0d0d1b'
+    }}>
+      {/* Chat header */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        padding: '1rem 1.5rem',
+        background: 'rgba(20, 20, 35, 0.9)',
+        backdropFilter: 'blur(10px)',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.05)'
+      }}>
+        <div style={{
+          width: '3rem',
+          height: '3rem',
+          borderRadius: '50%',
+          overflow: 'hidden',
+          background: 'linear-gradient(45deg, #ff4fa7, #7e3aed)',
+          marginRight: '1rem'
+        }}>
+          {character?.avatar ? (
+            <img
+              src={character.avatar}
+              alt={character.name}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+          ) : (
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '100%',
+              height: '100%',
+              color: 'white'
+            }}>
+              <svg xmlns="http://www.w3.org/2000/svg" style={{ width: '1.5rem', height: '1.5rem' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </div>
+          )}
+        </div>
+        <div>
+          <h2 style={{ 
+            fontSize: '1.25rem', 
+            fontWeight: '600', 
+            color: 'white', 
+            margin: 0 
+          }}>{character?.name || 'AI Companion'}</h2>
+          <p style={{ 
+            fontSize: '0.875rem', 
+            color: 'rgba(255,255,255,0.6)', 
+            margin: 0 
+          }}>{character?.personality || 'Friendly AI'}</p>
+        </div>
+        <div style={{ marginLeft: 'auto' }}>
+          <button 
+            onClick={() => {
+              localStorage.removeItem('isLoggedIn');
+              localStorage.removeItem('userEmail');
+              router.push('/login');
+            }}
+            style={{
+              padding: '0.5rem 1rem',
+              backgroundColor: 'rgba(255, 255, 255, 0.1)',
+              color: 'white',
+              border: 'none',
+              borderRadius: '0.5rem',
+              cursor: 'pointer',
+              fontSize: '0.875rem'
+            }}
+          >
+            Log Out
+          </button>
+        </div>
+      </div>
+
+      {/* Chat messages */}
+      <div 
+        style={{
+          flex: 1,
+          overflowY: 'auto',
+          padding: '1.5rem',
+          background: 'linear-gradient(to bottom, #11111e, #1a1a32)',
+          paddingBottom: '100px'
+        }}
+      >
+        <div 
+          style={{
+            maxWidth: '850px',
+            margin: '0 auto'
+          }}
+        >
+          {localMessages.length === 0 ? (
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              minHeight: '60vh',
+              textAlign: 'center',
+              padding: '2rem'
+            }}>
+              <div style={{
+                width: '5rem',
+                height: '5rem',
+                background: 'rgba(255, 255, 255, 0.05)',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: '1.5rem'
+              }}>
+                <svg xmlns="http://www.w3.org/2000/svg" style={{ width: '2.5rem', height: '2.5rem', color: '#ff4fa7' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+              </div>
+              <h3 style={{ fontSize: '1.5rem', color: 'white', marginBottom: '0.75rem' }}>Start a conversation</h3>
+              <p style={{ color: 'rgba(255,255,255,0.6)' }}>
+                Say hello to {character?.name || 'your AI companion'} and start chatting!
+              </p>
+            </div>
+          ) : (
+            localMessages.map((message) => (
+              <div
+                key={message.id}
+                style={{
+                  display: 'flex',
+                  marginBottom: '1.5rem',
+                  justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start'
+                }}
+              >
+                {message.type === 'image' ? (
+                  <div
+                    style={{
+                      maxWidth: '80%',
+                      padding: '0.5rem',
+                      borderRadius: '18px',
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)'
+                    }}
+                  >
+                    <img
+                      src={message.url}
+                      alt={message.prompt}
+                      style={{
+                        maxWidth: '100%',
+                        borderRadius: '12px',
+                        marginBottom: '0.5rem'
+                      }}
+                    />
+                    <p style={{
+                      fontSize: '0.75rem',
+                      color: 'rgba(255,255,255,0.5)',
+                      margin: '0.5rem'
+                    }}>
+                      {message.prompt}
+                    </p>
+                  </div>
+                ) : (
+                  <div
+                    style={{
+                      maxWidth: '80%',
+                      padding: '1rem 1.25rem',
+                      borderRadius: message.role === 'user' ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
+                      background: message.role === 'user' 
+                        ? 'linear-gradient(45deg, #ff4fa7, #7e3aed)' 
+                        : 'rgba(255, 255, 255, 0.05)',
+                      color: 'white',
+                      boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)'
+                    }}
+                  >
+                    <p style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{message.content}</p>
+                  </div>
+                )}
+              </div>
+            ))
+          )}
+
+          {isSubmitting && (
+            <div 
+              style={{
+                display: 'flex',
+                justifyContent: 'flex-start',
+                marginBottom: '1.5rem'
+              }}
+            >
+              <div
+                style={{
+                  padding: '1rem 1.25rem',
+                  borderRadius: '18px 18px 18px 4px',
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)'
+                }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    gap: '0.5rem'
+                  }}
+                >
+                  <div style={{
+                    width: '8px',
+                    height: '8px',
+                    borderRadius: '50%',
+                    background: '#6b7280',
+                    opacity: 0.7,
+                    animation: 'pulse 1s infinite'
+                  }}></div>
+                  <div style={{
+                    width: '8px',
+                    height: '8px',
+                    borderRadius: '50%',
+                    background: '#6b7280',
+                    opacity: 0.7,
+                    animation: 'pulse 1s infinite 0.2s'
+                  }}></div>
+                  <div style={{
+                    width: '8px',
+                    height: '8px',
+                    borderRadius: '50%',
+                    background: '#6b7280',
+                    opacity: 0.7,
+                    animation: 'pulse 1s infinite 0.4s'
+                  }}></div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div ref={messagesEndRef} style={{ height: '1px' }} />
+        </div>
+      </div>
+
+      {/* Input area - completely rebuilt */}
+      <div 
+        style={{
+          position: 'fixed',
+          bottom: 0,
+          left: '280px',
+          right: 0,
+          padding: '1rem',
+          background: 'rgba(20, 20, 35, 0.95)',
+          backdropFilter: 'blur(10px)',
+          borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+          zIndex: 1000
+        }}
+      >
+        <div
+          style={{
+            maxWidth: '850px',
+            margin: '0 auto',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.75rem'
+          }}
+        >
+          <button
+            onClick={handleGenerateImage}
+            disabled={generatingImage}
+            style={{
+              width: '44px',
+              height: '44px',
+              borderRadius: '50%',
+              border: 'none',
+              background: 'rgba(255, 255, 255, 0.08)',
+              color: 'white',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer'
+            }}
+          >
+            {generatingImage ? (
+              <div style={{ 
+                width: '20px', 
+                height: '20px', 
+                borderRadius: '50%',
+                borderTop: '2px solid #ff4fa7',
+                borderRight: '2px solid transparent',
+                borderBottom: '2px solid transparent',
+                borderLeft: '2px solid transparent',
+                animation: 'spin 1s linear infinite'
+              }}></div>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" style={{ width: '20px', height: '20px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            )}
+          </button>
+          
+          <input
+            ref={inputRef}
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSendMessage();
+              }
+            }}
+            placeholder={`Message ${character?.name || 'AI'}...`}
+            style={{
+              flex: 1,
+              padding: '0.75rem 1.25rem',
+              background: 'rgba(255, 255, 255, 0.07)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              borderRadius: '24px',
+              color: 'white',
+              fontSize: '1rem',
+              outline: 'none'
+            }}
+          />
+          
+          <button
+            onClick={handleSendMessage}
+            disabled={!input.trim() || isSubmitting}
+            style={{
+              width: '44px',
+              height: '44px',
+              borderRadius: '50%',
+              border: 'none',
+              background: input.trim() ? 'linear-gradient(45deg, #ff4fa7, #7e3aed)' : 'rgba(255, 255, 255, 0.1)',
+              color: 'white',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: input.trim() ? 'pointer' : 'default',
+              opacity: input.trim() ? 1 : 0.5
+            }}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" style={{ width: '20px', height: '20px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      {/* Add keyframe animations */}
+      <style jsx>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        @keyframes pulse {
+          0%, 100% { transform: scale(0.8); opacity: 0.5; }
+          50% { transform: scale(1.2); opacity: 1; }
+        }
+      `}</style>
+    </div>
   );
-
-  // Add message mutation
-  const addMessageMutation = trpc.chat.addMessage.useMutation({
+}chat.addMessage.useMutation({
     onSuccess: () => {
       chatQuery.refetch();
     },

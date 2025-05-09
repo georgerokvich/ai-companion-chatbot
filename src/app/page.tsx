@@ -151,10 +151,28 @@ export default function HomePage() {
           </nav>
           
           <div className="navbar-buttons">
-            <Link href="/login" className="btn btn-secondary">
+            <Link 
+              href="/login" 
+              className="btn btn-secondary"
+              style={{
+                position: 'relative',
+                zIndex: 9999,
+                cursor: 'pointer',
+                pointerEvents: 'auto'
+              }}
+            >
               Sign In
             </Link>
-            <Link href="/register" className="btn btn-primary">
+            <Link 
+              href="/register" 
+              className="btn btn-primary"
+              style={{
+                position: 'relative',
+                zIndex: 9999,
+                cursor: 'pointer',
+                pointerEvents: 'auto'
+              }}
+            >
               Create Account
             </Link>
           </div>
@@ -192,10 +210,28 @@ export default function HomePage() {
               transition={{ duration: 0.6, delay: 0.6 }}
               style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '2rem' }}
             >
-              <Link href="/register" className="btn btn-primary glow">
+              <Link 
+                href="/register" 
+                className="btn btn-primary glow"
+                style={{
+                  position: 'relative',
+                  zIndex: 9999,
+                  cursor: 'pointer',
+                  pointerEvents: 'auto'
+                }}
+              >
                 Get Started Free
               </Link>
-              <Link href="/characters" className="btn btn-secondary">
+              <Link 
+                href="/characters" 
+                className="btn btn-secondary"
+                style={{
+                  position: 'relative',
+                  zIndex: 9999,
+                  cursor: 'pointer',
+                  pointerEvents: 'auto'
+                }}
+              >
                 Explore Characters
               </Link>
             </motion.div>
@@ -317,7 +353,18 @@ export default function HomePage() {
                 transition={{ duration: 0.6, delay: 0.6 }}
                 style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}
               >
-                <Link href="/register" className="btn btn-primary glow" style={{ padding: '1rem 2rem', fontSize: '1.125rem' }}>
+                <Link 
+                  href="/register" 
+                  className="btn btn-primary glow" 
+                  style={{ 
+                    padding: '1rem 2rem', 
+                    fontSize: '1.125rem',
+                    position: 'relative',
+                    zIndex: 9999,
+                    cursor: 'pointer',
+                    pointerEvents: 'auto'
+                  }}
+                >
                   Create Your Companion Now
                 </Link>
               </motion.div>

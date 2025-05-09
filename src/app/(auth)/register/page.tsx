@@ -101,7 +101,14 @@ export default function RegisterPage() {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             className="btn btn-primary"
-            style={{ width: '100%', marginTop: '1.5rem' }}
+            style={{ 
+              width: '100%', 
+              marginTop: '1.5rem',
+              position: 'relative',
+              zIndex: 999,
+              cursor: 'pointer',
+              pointerEvents: 'auto'
+            }}
           >
             {loading ? (
               <span className="loading"></span>
@@ -114,7 +121,14 @@ export default function RegisterPage() {
         <div className="form-footer">
           <p>
             Already have an account?{' '}
-            <Link href="/login">Sign In</Link>
+            <Link href="/login" style={{
+              position: 'relative',
+              zIndex: 999,
+              cursor: 'pointer',
+              pointerEvents: 'auto',
+              color: 'var(--primary)',
+              fontWeight: 500
+            }}>Sign In</Link>
           </p>
         </div>
       </motion.div>

@@ -88,6 +88,8 @@ const features = [
 export default function HomePage() {
   const [scrolled, setScrolled] = useState(false);
   const [currentCharacter, setCurrentCharacter] = useState(0);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userEmail, setUserEmail] = useState('');
   
   // Intersection observer refs for animations
   const [heroRef, heroInView] = useInView({
@@ -109,6 +111,30 @@ export default function HomePage() {
     triggerOnce: true,
     threshold: 0.1,
   });
+
+  // Check login status
+  useEffect(() => {
+    const checkLoginStatus = () => {
+      const loggedIn = localStorage.getItem('isLoggedIn') === 'true';
+      const email = localStorage.getItem('userEmail');
+      setIsLoggedIn(loggedIn);
+      if (email) setUserEmail(email);
+    };
+    
+    // Check on initial load
+    checkLoginStatus();
+    
+    // Set up event listener for storage changes
+    window.addEventListener('storage', checkLoginStatus);
+    
+    // Check every second (for demo purposes)
+    const interval = setInterval(checkLoginStatus, 1000);
+    
+    return () => {
+      window.removeEventListener('storage', checkLoginStatus);
+      clearInterval(interval);
+    };
+  }, []);
 
   // Handle scroll for navbar effect
   useEffect(() => {
@@ -151,30 +177,60 @@ export default function HomePage() {
           </nav>
           
           <div className="navbar-buttons">
-            <Link 
-              href="/login" 
-              className="btn btn-secondary"
-              style={{
-                position: 'relative',
-                zIndex: 9999,
-                cursor: 'pointer',
-                pointerEvents: 'auto'
-              }}
-            >
-              Sign In
-            </Link>
-            <Link 
-              href="/register" 
-              className="btn btn-primary"
-              style={{
-                position: 'relative',
-                zIndex: 9999,
-                cursor: 'pointer',
-                pointerEvents: 'auto'
-              }}
-            >
-              Create Account
-            </Link>
+            {isLoggedIn ? (
+              <>
+                <Link 
+                  href="/dashboard" 
+                  className="btn btn-secondary"
+                  style={{
+                    position: 'relative',
+                    zIndex: 9999,
+                    cursor: 'pointer',
+                    pointerEvents: 'auto'
+                  }}
+                >
+                  Dashboard
+                </Link>
+                <div 
+                  className="btn btn-primary"
+                  style={{
+                    position: 'relative',
+                    zIndex: 9999,
+                    cursor: 'pointer',
+                    pointerEvents: 'auto'
+                  }}
+                >
+                  {userEmail ? userEmail.split('@')[0] : 'User'}
+                </div>
+              </>
+            ) : (
+              <>
+                <Link 
+                  href="/login" 
+                  className="btn btn-secondary"
+                  style={{
+                    position: 'relative',
+                    zIndex: 9999,
+                    cursor: 'pointer',
+                    pointerEvents: 'auto'
+                  }}
+                >
+                  Sign In
+                </Link>
+                <Link 
+                  href="/register" 
+                  className="btn btn-primary"
+                  style={{
+                    position: 'relative',
+                    zIndex: 9999,
+                    cursor: 'pointer',
+                    pointerEvents: 'auto'
+                  }}
+                >
+                  Create Account
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </header>
@@ -210,30 +266,61 @@ export default function HomePage() {
               transition={{ duration: 0.6, delay: 0.6 }}
               style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '2rem' }}
             >
-              <Link 
-                href="/register" 
-                className="btn btn-primary glow"
-                style={{
-                  position: 'relative',
-                  zIndex: 9999,
-                  cursor: 'pointer',
-                  pointerEvents: 'auto'
-                }}
-              >
-                Get Started Free
-              </Link>
-              <Link 
-                href="/characters" 
-                className="btn btn-secondary"
-                style={{
-                  position: 'relative',
-                  zIndex: 9999,
-                  cursor: 'pointer',
-                  pointerEvents: 'auto'
-                }}
-              >
-                Explore Characters
-              </Link>
+              {isLoggedIn ? (
+                <>
+                  <Link 
+                    href="/dashboard" 
+                    className="btn btn-primary glow"
+                    style={{
+                      position: 'relative',
+                      zIndex: 9999,
+                      cursor: 'pointer',
+                      pointerEvents: 'auto'
+                    }}
+                  >
+                    Go to Dashboard
+                  </Link>
+                  <Link 
+                    href="/characters" 
+                    className="btn btn-secondary"
+                    style={{
+                      position: 'relative',
+                      zIndex: 9999,
+                      cursor: 'pointer',
+                      pointerEvents: 'auto'
+                    }}
+                  >
+                    Explore Characters
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link 
+                    href="/register" 
+                    className="btn btn-primary glow"
+                    style={{
+                      position: 'relative',
+                      zIndex: 9999,
+                      cursor: 'pointer',
+                      pointerEvents: 'auto'
+                    }}
+                  >
+                    Get Started Free
+                  </Link>
+                  <Link 
+                    href="/characters" 
+                    className="btn btn-secondary"
+                    style={{
+                      position: 'relative',
+                      zIndex: 9999,
+                      cursor: 'pointer',
+                      pointerEvents: 'auto'
+                    }}
+                  >
+                    Explore Characters
+                  </Link>
+                </>
+              )}
             </motion.div>
             
             {/* Character Showcase */}
@@ -353,20 +440,37 @@ export default function HomePage() {
                 transition={{ duration: 0.6, delay: 0.6 }}
                 style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}
               >
-                <Link 
-                  href="/register" 
-                  className="btn btn-primary glow" 
-                  style={{ 
-                    padding: '1rem 2rem', 
-                    fontSize: '1.125rem',
-                    position: 'relative',
-                    zIndex: 9999,
-                    cursor: 'pointer',
-                    pointerEvents: 'auto'
-                  }}
-                >
-                  Create Your Companion Now
-                </Link>
+                {isLoggedIn ? (
+                  <Link 
+                    href="/dashboard" 
+                    className="btn btn-primary glow" 
+                    style={{ 
+                      padding: '1rem 2rem', 
+                      fontSize: '1.125rem',
+                      position: 'relative',
+                      zIndex: 9999,
+                      cursor: 'pointer',
+                      pointerEvents: 'auto'
+                    }}
+                  >
+                    Go to Your Dashboard
+                  </Link>
+                ) : (
+                  <Link 
+                    href="/register" 
+                    className="btn btn-primary glow" 
+                    style={{ 
+                      padding: '1rem 2rem', 
+                      fontSize: '1.125rem',
+                      position: 'relative',
+                      zIndex: 9999,
+                      cursor: 'pointer',
+                      pointerEvents: 'auto'
+                    }}
+                  >
+                    Create Your Companion Now
+                  </Link>
+                )}
               </motion.div>
             </motion.div>
           </div>

@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { trpc } from '@/lib/trpc/client';
+import Link from 'next/link';
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -16,11 +17,11 @@ export default function DashboardPage() {
   }, [charactersQuery.data, router]);
 
   return (
-    <div className="flex flex-col items-center justify-center h-full p-8 bg-gradient-to-b from-purple-50 to-pink-50">
+    <div className="flex flex-col items-center justify-center h-full p-8">
       <div className="max-w-md text-center">
-        <h1 className="text-3xl font-bold text-gray-900">Welcome to AI Companion</h1>
+        <h1 className="text-3xl font-bold text-white" style={{ marginBottom: '1.5rem' }}>Welcome to AI Companion</h1>
         
-        <p className="mt-4 text-lg text-gray-600">
+        <p className="text-lg text-gray-300" style={{ marginBottom: '2rem' }}>
           {charactersQuery.isLoading
             ? 'Loading your characters...'
             : charactersQuery.data?.length === 0
@@ -29,12 +30,17 @@ export default function DashboardPage() {
         </p>
 
         {charactersQuery.data?.length === 0 && (
-          <button
-            onClick={() => router.push('/characters/new')}
-            className="px-6 py-3 mt-6 text-white bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg hover:from-purple-600 hover:to-pink-600 shadow-md"
+          <Link
+            href="/characters/new"
+            className="btn btn-primary"
+            style={{ 
+              padding: '1rem 2rem', 
+              display: 'inline-block',
+              margin: '0 auto'
+            }}
           >
             Create Character
-          </button>
+          </Link>
         )}
       </div>
     </div>

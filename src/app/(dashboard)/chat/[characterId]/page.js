@@ -92,34 +92,30 @@ export default function ChatPage(props) {
       const character = characterQuery.data;
       if (!character) throw new Error('Character not found');
 
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          input,
-          character: {
-            name: character.name,
-            personality: character.personality,
-          },
-        }),
-      });
-
-      if (!response.ok) throw new Error('Failed to get AI response');
+      // Mock AI response - in demo mode, we'll just simulate a response
+      setTimeout(async () => {
+        const responses = [
+          "I'm so happy to chat with you! How can I make your day better?",
+          "That's an interesting thought. Tell me more about it!",
+          "I've been thinking about that too. What do you think about this topic?",
+          "I love your perspective on things. You're really insightful!",
+          "That's fascinating! I'd love to explore this idea more with you.",
+        ];
+        
+        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+        
+        // Add AI response to chat
+        await addMessageMutation.mutateAsync({
+          chatId,
+          content: randomResponse,
+          role: 'assistant',
+        });
+        
+        setIsSubmitting(false);
+      }, 1500);
       
-      const { reply } = await response.json();
-      
-      // Add AI response to chat
-      await addMessageMutation.mutateAsync({
-        chatId,
-        content: reply,
-        role: 'assistant',
-      });
     } catch (error) {
       console.error('Error sending message:', error);
-      alert('Failed to send message. Please try again.');
-    } finally {
       setIsSubmitting(false);
     }
   };
@@ -131,51 +127,41 @@ export default function ChatPage(props) {
     setGeneratingImage(true);
     
     try {
-      const lastMessage = chatQuery.data?.messages.slice(-1)[0];
-      const prompt = lastMessage?.content || 'Generate a portrait image';
-      
-      const response = await fetch('/api/image', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ prompt }),
-      });
-
-      if (!response.ok) throw new Error('Failed to generate image');
-      
-      const { imageUrl } = await response.json();
-      
-      // Add image to chat
-      await addImageMutation.mutateAsync({
-        chatId,
-        url: imageUrl,
-        prompt,
-      });
+      // In demo mode, we'll just use placeholder images
+      setTimeout(async () => {
+        const imageUrl = `https://placekitten.com/500/${400 + Math.floor(Math.random() * 200)}`;
+        
+        // Add image to chat
+        await addImageMutation.mutateAsync({
+          chatId,
+          url: imageUrl,
+          prompt: "Generated image for you!",
+        });
+        
+        setGeneratingImage(false);
+      }, 2000);
     } catch (error) {
       console.error('Error generating image:', error);
-      alert('Failed to generate image. Please try again.');
-    } finally {
       setGeneratingImage(false);
     }
   };
 
   if (characterQuery.isLoading) {
     return (
-      <div className="flex items-center justify-center flex-1">
-        <div className="w-12 h-12 border-t-4 border-purple-500 border-solid rounded-full animate-spin"></div>
+      <div className="flex items-center justify-center h-screen" style={{ background: 'var(--background)' }}>
+        <div className="w-16 h-16 border-t-4 border-primary border-solid rounded-full animate-spin"></div>
       </div>
     );
   }
 
   if (!characterQuery.data) {
     return (
-      <div className="flex flex-col items-center justify-center flex-1 p-8">
-        <h2 className="text-2xl font-bold text-gray-800">Character not found</h2>
-        <p className="mt-2 text-gray-600">This character does not exist or you do not have access to it.</p>
+      <div className="flex flex-col items-center justify-center h-screen p-8" style={{ background: 'var(--background)' }}>
+        <h2 className="text-2xl font-bold text-white">Character not found</h2>
+        <p className="mt-2 text-gray-400">This character does not exist or you do not have access to it.</p>
         <button
           onClick={() => router.push('/dashboard')}
-          className="px-4 py-2 mt-4 text-white bg-purple-500 rounded-md hover:bg-purple-600"
+          className="px-4 py-2 mt-4 text-white bg-primary rounded-md hover:bg-primary-dark"
         >
           Back to Dashboard
         </button>
@@ -186,44 +172,41 @@ export default function ChatPage(props) {
   const { data: character } = characterQuery;
 
   return (
-    <div className="flex flex-col w-full h-full">
+    <div className="chat-container">
       {/* Chat header */}
-      <div className="flex items-center p-4 bg-white shadow-sm md:p-6">
-        <div className="flex items-center">
-          <div className="w-12 h-12 overflow-hidden bg-gray-100 rounded-full md:w-14 md:h-14">
-            {character.avatar ? (
-              <img
-                src={character.avatar}
-                alt={character.name}
-                className="object-cover w-full h-full"
-              />
-            ) : (
-              <div className="flex items-center justify-center w-full h-full text-gray-400">
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-              </div>
-            )}
-          </div>
-          <div className="ml-4">
-            <h2 className="text-xl font-bold text-gray-900">{character.name}</h2>
-            <p className="text-sm text-gray-500">{character.personality}</p>
-          </div>
+      <div className="chat-header">
+        <div className="character-avatar">
+          {character.avatar ? (
+            <img
+              src={character.avatar}
+              alt={character.name}
+            />
+          ) : (
+            <div className="flex items-center justify-center w-full h-full text-white">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </div>
+          )}
+        </div>
+        <div className="character-info">
+          <h2>{character.name}</h2>
+          <p>{character.personality}</p>
         </div>
       </div>
 
       {/* Chat messages */}
-      <div className="flex-1 p-4 overflow-y-auto bg-gray-50">
-        <div className="max-w-3xl mx-auto space-y-4">
+      <div className="chat-messages">
+        <div className="message-list">
           {!chatQuery.data || chatQuery.data.messages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 text-center">
-              <div className="p-4 mb-4 text-purple-500 bg-purple-100 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="empty-chat">
+              <div className="empty-chat-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-gray-700">Start a conversation</h3>
-              <p className="mt-2 text-gray-500">
+              <h3>Start a conversation</h3>
+              <p>
                 Say hello to {character.name} and start chatting!
               </p>
             </div>
@@ -231,46 +214,35 @@ export default function ChatPage(props) {
             chatQuery.data.messages.map((message) => (
               <div
                 key={message.id}
-                className={`flex ${
-                  message.role === 'user' ? 'justify-end' : 'justify-start'
-                }`}
+                className={`message message-${message.role}`}
               >
-                <div
-                  className={`max-w-[80%] rounded-2xl px-4 py-3 ${
-                    message.role === 'user'
-                      ? 'bg-purple-500 text-white'
-                      : 'bg-white text-gray-800 shadow-sm'
-                  }`}
-                >
-                  <p className="whitespace-pre-wrap">{message.content}</p>
+                <div className="message-bubble">
+                  <p>{message.content}</p>
                 </div>
               </div>
             ))
           )}
 
           {/* Display images */}
-          {chatQuery.data?.images.map((image) => (
-            <div key={image.id} className="flex justify-start">
-              <div className="max-w-[80%] rounded-2xl p-2 bg-white shadow-sm">
+          {chatQuery.data?.images && chatQuery.data.images.map((image) => (
+            <div key={image.id} className="message message-assistant">
+              <div className="message-bubble">
                 <img
                   src={image.url}
                   alt={image.prompt}
-                  className="object-contain max-w-full rounded-lg max-h-80"
+                  className="message-image"
                 />
-                <p className="mt-2 text-xs text-gray-500">
-                  Generated from: {image.prompt}
-                </p>
               </div>
             </div>
           ))}
 
           {isSubmitting && (
-            <div className="flex justify-start">
-              <div className="px-4 py-3 bg-white rounded-2xl shadow-sm">
-                <div className="flex space-x-2">
-                  <div className="w-2 h-2 bg-gray-300 rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-gray-300 rounded-full animate-bounce delay-75"></div>
-                  <div className="w-2 h-2 bg-gray-300 rounded-full animate-bounce delay-150"></div>
+            <div className="message message-assistant">
+              <div className="message-bubble">
+                <div className="loading">
+                  <span></span>
+                  <span></span>
+                  <span></span>
                 </div>
               </div>
             </div>
@@ -281,44 +253,42 @@ export default function ChatPage(props) {
       </div>
 
       {/* Input area */}
-      <div className="p-4 bg-white border-t border-gray-200">
-        <div className="max-w-3xl mx-auto">
-          <form onSubmit={handleSendMessage} className="flex space-x-2">
-            <button
-              type="button"
-              onClick={handleGenerateImage}
-              disabled={generatingImage || !chatId}
-              className="p-2 text-gray-500 bg-gray-100 rounded-full hover:bg-gray-200 focus:outline-none"
-            >
-              {generatingImage ? (
-                <div className="w-6 h-6 border-2 border-gray-300 border-t-purple-500 rounded-full animate-spin"></div>
-              ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-              )}
-            </button>
-            
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              disabled={isSubmitting || !chatId}
-              placeholder={`Message ${character.name}...`}
-              className="flex-1 px-4 py-2 bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500"
-            />
-            
-            <button
-              type="submit"
-              disabled={isSubmitting || !input.trim() || !chatId}
-              className="p-2 text-white bg-gradient-to-r from-purple-500 to-pink-500 rounded-full hover:from-purple-600 hover:to-pink-600 focus:outline-none disabled:opacity-50"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+      <div className="chat-input">
+        <form onSubmit={handleSendMessage} className="input-form">
+          <button
+            type="button"
+            onClick={handleGenerateImage}
+            disabled={generatingImage || !chatId}
+            className="input-image"
+          >
+            {generatingImage ? (
+              <div className="w-5 h-5 border-2 border-gray-300 border-t-primary rounded-full animate-spin"></div>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-            </button>
-          </form>
-        </div>
+            )}
+          </button>
+          
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            disabled={isSubmitting || !chatId}
+            placeholder={`Message ${character.name}...`}
+            className="input-field"
+          />
+          
+          <button
+            type="submit"
+            disabled={isSubmitting || !input.trim() || !chatId}
+            className="input-send"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+            </svg>
+          </button>
+        </form>
       </div>
     </div>
   );

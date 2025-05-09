@@ -23,6 +23,18 @@ export default function DashboardLayout({
 
   useEffect(() => {
     const checkUser = async () => {
+      // First check localStorage for demo auth
+      const isLoggedIn = localStorage.getItem('isLoggedIn');
+      const userEmail = localStorage.getItem('userEmail');
+      
+      if (isLoggedIn === 'true' && userEmail) {
+        // If localStorage has login info, use that for demo mode
+        setUser({ email: userEmail, name: 'Demo User' });
+        setLoading(false);
+        return;
+      }
+      
+      // If not in localStorage, check Supabase session
       const { data } = await supabase.auth.getSession();
       
       if (!data.session) {

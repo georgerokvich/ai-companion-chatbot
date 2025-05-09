@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { router, protectedProcedure } from '../server';
 import { prisma } from '../../prisma/client';
+import { mockChats } from '../../mock-data/chats';
 
 export const chatRouter = router({
   // Create a new chat for a character
@@ -19,6 +20,31 @@ export const chatRouter = router({
   getAllByCharacter: protectedProcedure
     .input(z.object({ characterId: z.string() }))
     .query(async ({ ctx, input }) => {
+      // Check for demo mode
+      const demoEmail = 'demo@example.com';
+      const user = await prisma.user.findUnique({
+        where: {
+          id: ctx.userId,
+        }
+      });
+      
+      // For demo mode, return mock chats
+      if (user?.email === demoEmail) {
+        const characterChats = mockChats.filter(chat => chat.characterId === input.characterId);
+        if (characterChats.length > 0) {
+          return characterChats.map(chat => ({
+            ...chat,
+            messages: [chat.messages[0]] // Take only the first message for preview
+          }));
+        }
+        // If no matching character chats, return the first one
+        return [{
+          ...mockChats[0],
+          messages: [mockChats[0].messages[0]] // Take only the first message
+        }];
+      }
+      
+      // For regular mode, return from database
       return prisma.chat.findMany({
         where: {
           userId: ctx.userId,
@@ -42,6 +68,25 @@ export const chatRouter = router({
   getById: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
+      // Check for demo mode
+      const demoEmail = 'demo@example.com';
+      const user = await prisma.user.findUnique({
+        where: {
+          id: ctx.userId,
+        }
+      });
+      
+      // For demo mode, return mock chat
+      if (user?.email === demoEmail) {
+        const mockChat = mockChats.find(chat => chat.id === input.id);
+        if (mockChat) {
+          return mockChat;
+        }
+        // If no matching mock chat, return the first one
+        return mockChats[0];
+      }
+      
+      // For regular mode, return from database
       return prisma.chat.findUnique({
         where: {
           id: input.id,

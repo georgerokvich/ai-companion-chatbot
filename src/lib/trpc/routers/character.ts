@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { router, protectedProcedure } from '../server';
 import { prisma } from '../../prisma/client';
+import { mockCharacters } from '../../mock-data/characters';
 
 export const characterRouter = router({
   // Create a new character
@@ -24,6 +25,21 @@ export const characterRouter = router({
 
   // Get all characters
   getAll: protectedProcedure.query(async ({ ctx }) => {
+    // Check for demo mode - if the user email is demo@example.com or localStorage has demo flag
+    const demoEmail = 'demo@example.com';
+    const user = await prisma.user.findUnique({
+      where: {
+        id: ctx.userId,
+      }
+    });
+    
+    // For demo mode, return mock characters
+    if (user?.email === demoEmail) {
+      console.log('Using mock characters for demo mode');
+      return mockCharacters;
+    }
+    
+    // For regular mode, return from database
     return prisma.character.findMany({
       where: {
         userId: ctx.userId,
@@ -38,6 +54,25 @@ export const characterRouter = router({
   getById: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
+      // Check for demo mode
+      const demoEmail = 'demo@example.com';
+      const user = await prisma.user.findUnique({
+        where: {
+          id: ctx.userId,
+        }
+      });
+      
+      // For demo mode, return mock character
+      if (user?.email === demoEmail) {
+        const mockCharacter = mockCharacters.find(char => char.id === input.id);
+        if (mockCharacter) {
+          return mockCharacter;
+        }
+        // If no matching mock character, return the first one
+        return mockCharacters[0];
+      }
+      
+      // For regular mode, return from database
       return prisma.character.findUnique({
         where: {
           id: input.id,

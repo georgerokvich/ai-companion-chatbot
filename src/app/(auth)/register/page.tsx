@@ -18,10 +18,22 @@ export default function RegisterPage() {
     setError(null);
 
     try {
-      // Demo mode - just simulate success
       // Store login info in localStorage for persistence in demo
       localStorage.setItem('isLoggedIn', 'true');
       localStorage.setItem('userEmail', email);
+      
+      // Import the supabase client for authentication
+      const { supabase } = await import('@/lib/supabase/client');
+      
+      // Attempt to sign up with mock Supabase auth
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+      
+      if (error) {
+        throw new Error(error.message);
+      }
       
       // Redirect to dashboard
       setTimeout(() => {

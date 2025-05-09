@@ -178,31 +178,18 @@ export default function HomePage() {
           
           <div className="navbar-buttons">
             {isLoggedIn ? (
-              <>
-                <Link 
-                  href="/dashboard" 
-                  className="btn btn-secondary"
-                  style={{
-                    position: 'relative',
-                    zIndex: 9999,
-                    cursor: 'pointer',
-                    pointerEvents: 'auto'
-                  }}
-                >
-                  Dashboard
-                </Link>
-                <div 
-                  className="btn btn-primary"
-                  style={{
-                    position: 'relative',
-                    zIndex: 9999,
-                    cursor: 'pointer',
-                    pointerEvents: 'auto'
-                  }}
-                >
-                  {userEmail ? userEmail.split('@')[0] : 'User'}
-                </div>
-              </>
+              <Link 
+                href="/dashboard" 
+                className="btn btn-primary"
+                style={{
+                  position: 'relative',
+                  zIndex: 9999,
+                  cursor: 'pointer',
+                  pointerEvents: 'auto'
+                }}
+              >
+                Dashboard
+              </Link>
             ) : (
               <>
                 <Link 

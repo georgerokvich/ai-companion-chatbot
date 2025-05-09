@@ -193,6 +193,22 @@ export default function ChatPage(props) {
           <h2>{character.name}</h2>
           <p>{character.personality}</p>
         </div>
+        <div style={{ marginLeft: 'auto' }}>
+          <button 
+            onClick={() => {
+              localStorage.removeItem('isLoggedIn');
+              localStorage.removeItem('userEmail');
+              router.push('/login');
+            }}
+            className="btn btn-secondary"
+            style={{
+              padding: '0.5rem 1rem',
+              fontSize: '0.875rem'
+            }}
+          >
+            Log Out
+          </button>
+        </div>
       </div>
 
       {/* Chat messages */}

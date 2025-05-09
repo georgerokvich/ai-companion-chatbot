@@ -18,25 +18,13 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      // Store login info in localStorage for persistence in demo
+      // Demo mode - always successful login
       localStorage.setItem('isLoggedIn', 'true');
       localStorage.setItem('userEmail', email);
       
-      // Import the supabase client for authentication
-      const { supabase } = await import('@/lib/supabase/client');
-      
-      // Attempt to sign in with mock Supabase auth
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      
-      if (error) {
-        throw new Error(error.message);
-      }
-      
-      // Redirect to dashboard
+      // Simulate API call delay
       setTimeout(() => {
+        // Redirect to dashboard
         router.push('/dashboard');
       }, 1000);
     } catch (error: any) {

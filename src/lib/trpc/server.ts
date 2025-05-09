@@ -5,30 +5,11 @@ import { prisma } from '../prisma/client';
 
 // Mock auth for the demo
 const getSession = async () => {
-  // For the demo, we'll always return a mock session with a user
-  // In a real app, this would use Supabase Auth
-  const mockUser = await prisma.user.findFirst();
-  
-  if (!mockUser) {
-    // Create a demo user if none exists
-    const newUser = await prisma.user.create({
-      data: {
-        email: 'demo@example.com',
-      },
-    });
-    
-    return {
-      user: {
-        id: newUser.id,
-        email: newUser.email,
-      },
-    };
-  }
-  
+  // For demo mode, always return a mock session
   return {
     user: {
-      id: mockUser.id,
-      email: mockUser.email,
+      id: 'demo-user-id',
+      email: 'demo@example.com',
     },
   };
 };

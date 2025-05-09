@@ -120,6 +120,8 @@
   flex: 1;
   min-height: 100vh;
   background: linear-gradient(135deg, #0d0d1b, #1a1a32);
+  position: relative;
+  padding-bottom: 80px; /* Add space for the fixed chat input */
 }
 
 /* Mobile sidebar */
@@ -388,11 +390,17 @@
   animation-delay: 0.4s;
 }
 
-@keyframes bounce {
-  0%, 80%, 100% {
-    transform: translateY(0);
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
   }
-  40% {
-    transform: translateY(-0.5rem);
+  100% {
+    transform: rotate(360deg);
   }
+}
+
+/* Fix for z-index stacking in chat area */
+.chat-container {
+  position: relative;
+  isolation: isolate;
 }

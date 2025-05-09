@@ -90,24 +90,25 @@ export default function ChatPage(props) {
 
   // Handle sending message
   const handleSendMessage = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
+    
+    console.log('Send message clicked', input);
     
     if (!input.trim() || !chatId || isSubmitting) return;
     
     setIsSubmitting(true);
-    setInput('');
+    const messageText = input; // Save message text before clearing input
+    setInput(''); // Clear input immediately for better UX
     
     try {
+      console.log('Adding user message', messageText);
+      
       // Add user message to chat
       await addMessageMutation.mutateAsync({
         chatId,
-        content: input,
+        content: messageText,
         role: 'user',
       });
-
-      // Get AI response
-      const character = characterQuery.data;
-      if (!character) throw new Error('Character not found');
 
       // Mock AI response - in demo mode, we'll just simulate a response
       setTimeout(async () => {
@@ -121,6 +122,8 @@ export default function ChatPage(props) {
         
         const randomResponse = responses[Math.floor(Math.random() * responses.length)];
         
+        console.log('Adding AI response', randomResponse);
+        
         // Add AI response to chat
         await addMessageMutation.mutateAsync({
           chatId,
@@ -129,11 +132,17 @@ export default function ChatPage(props) {
         });
         
         setIsSubmitting(false);
+        
+        // Re-focus the input after sending
+        setTimeout(() => {
+          focusInput();
+        }, 100);
       }, 1500);
       
     } catch (error) {
       console.error('Error sending message:', error);
       setIsSubmitting(false);
+      setInput(messageText); // Restore message text on error
     }
   };
 
@@ -285,67 +294,108 @@ export default function ChatPage(props) {
         </div>
       </div>
 
-      {/* Input area */}
-      <div className="chat-input">
-        <form 
-          onSubmit={handleSendMessage} 
-          className="input-form"
-          onClick={focusInput}
+      {/* Input area - completely rebuilt for maximum compatibility */}
+      <div 
+        style={{
+          padding: '16px',
+          background: '#121225',
+          borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+          position: 'fixed',
+          bottom: 0,
+          left: '280px',
+          right: 0,
+          zIndex: 9999
+        }}
+      >
+        <div
+          style={{
+            maxWidth: '850px',
+            margin: '0 auto',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px'
+          }}
         >
           <button
             type="button"
             onClick={handleGenerateImage}
             disabled={generatingImage || !chatId}
-            className="input-image"
             style={{
-              zIndex: 999,
-              position: 'relative',
-              pointerEvents: 'auto',
-              cursor: 'pointer'
+              width: '44px',
+              height: '44px',
+              borderRadius: '50%',
+              background: 'rgba(255, 255, 255, 0.08)',
+              border: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              zIndex: 10000
             }}
           >
             {generatingImage ? (
-              <div className="w-5 h-5 border-2 border-gray-300 border-t-primary rounded-full animate-spin"></div>
+              <div style={{ 
+                width: '20px', 
+                height: '20px', 
+                border: '2px solid #333', 
+                borderTopColor: '#ff4fa7',
+                borderRadius: '50%',
+                animation: 'spin 1s linear infinite'
+              }}></div>
             ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{ color: '#aaa' }}>
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
             )}
           </button>
           
           <input
+            id="chat-input"
             ref={inputRef}
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            disabled={isSubmitting || !chatId}
-            placeholder={`Message ${character.name}...`}
-            className="input-field"
+            placeholder={`Message ${character?.name || 'AI'}...`}
             style={{
-              zIndex: 999,
-              position: 'relative',
-              pointerEvents: 'auto',
-              cursor: 'text'
+              flex: 1,
+              padding: '14px 20px',
+              background: 'rgba(255, 255, 255, 0.07)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              borderRadius: '24px',
+              color: 'white',
+              fontSize: '16px',
+              zIndex: 10000,
+              outline: 'none'
             }}
-            onClick={(e) => e.stopPropagation()}
+            onFocus={(e) => console.log('Input focused')}
+            onClick={(e) => {
+              e.stopPropagation();
+              console.log('Input clicked');
+            }}
           />
           
           <button
-            type="submit"
+            type="button"
+            onClick={handleSendMessage}
             disabled={isSubmitting || !input.trim() || !chatId}
-            className="input-send"
             style={{
-              zIndex: 999,
-              position: 'relative',
-              pointerEvents: 'auto',
-              cursor: 'pointer'
+              width: '44px',
+              height: '44px',
+              borderRadius: '50%',
+              background: 'linear-gradient(45deg, #ff4fa7, #7e3aed)',
+              border: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              zIndex: 10000
             }}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{ color: 'white' }}>
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
             </svg>
           </button>
-        </form>
+        </div>
       </div>
     </div>
   );

@@ -88,61 +88,98 @@ export default function ChatPage(props) {
     return () => clearTimeout(timer);
   }, [chatId]);
 
-  // Handle sending message
+  // Handle sending message - simplified and more direct
   const handleSendMessage = async (e) => {
     if (e) e.preventDefault();
     
-    console.log('Send message clicked', input);
+    // Skip if empty or already submitting
+    if (!input.trim() || isSubmitting) {
+      console.log('Send prevented - empty input or already submitting');
+      return;
+    }
     
-    if (!input.trim() || !chatId || isSubmitting) return;
+    // Skip if no chat ID yet
+    if (!chatId) {
+      console.log('No chat ID available yet');
+      return;
+    }
+    
+    console.log('Sending message:', input);
     
     setIsSubmitting(true);
-    const messageText = input; // Save message text before clearing input
+    const messageText = input.trim(); // Save message text before clearing input
     setInput(''); // Clear input immediately for better UX
     
     try {
-      console.log('Adding user message', messageText);
+      console.log('Adding user message to chat');
       
-      // Add user message to chat
+      // Add user message to local state immediately for instant feedback
+      const mockUserMessage = {
+        id: 'temp-' + Date.now(),
+        content: messageText,
+        role: 'user',
+        chatId: chatId,
+        createdAt: new Date()
+      };
+      
+      // Optimistically update UI
+      if (chatQuery.data) {
+        const updatedMessages = [...chatQuery.data.messages, mockUserMessage];
+        chatQuery.data.messages = updatedMessages;
+      }
+      
+      // Actually add the message via API
       await addMessageMutation.mutateAsync({
         chatId,
         content: messageText,
         role: 'user',
       });
+      
+      console.log('User message added successfully');
 
-      // Mock AI response - in demo mode, we'll just simulate a response
+      // Simulate AI thinking and response
       setTimeout(async () => {
-        const responses = [
-          "I'm so happy to chat with you! How can I make your day better?",
-          "That's an interesting thought. Tell me more about it!",
-          "I've been thinking about that too. What do you think about this topic?",
-          "I love your perspective on things. You're really insightful!",
-          "That's fascinating! I'd love to explore this idea more with you.",
-        ];
-        
-        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-        
-        console.log('Adding AI response', randomResponse);
-        
-        // Add AI response to chat
-        await addMessageMutation.mutateAsync({
-          chatId,
-          content: randomResponse,
-          role: 'assistant',
-        });
-        
-        setIsSubmitting(false);
-        
-        // Re-focus the input after sending
-        setTimeout(() => {
-          focusInput();
-        }, 100);
+        try {
+          const responses = [
+            "I'm so happy to chat with you! How can I make your day better?",
+            "That's an interesting thought. Tell me more about it!",
+            "I've been thinking about that too. What do you think about this topic?",
+            "I love your perspective on things. You're really insightful!",
+            "That's fascinating! I'd love to explore this idea more with you.",
+          ];
+          
+          const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+          
+          console.log('Adding AI response');
+          
+          // Add AI response to chat
+          await addMessageMutation.mutateAsync({
+            chatId,
+            content: randomResponse,
+            role: 'assistant',
+          });
+          
+          console.log('AI response added successfully');
+        } catch (error) {
+          console.error('Error adding AI response:', error);
+        } finally {
+          setIsSubmitting(false);
+          
+          // Re-focus the input after sending
+          setTimeout(() => {
+            if (inputRef.current) {
+              inputRef.current.focus();
+              console.log('Input refocused');
+            }
+          }, 100);
+        }
       }, 1500);
       
     } catch (error) {
       console.error('Error sending message:', error);
       setIsSubmitting(false);
       setInput(messageText); // Restore message text on error
+      alert('Failed to send message. Please try again.');
     }
   };
 
@@ -238,17 +275,48 @@ export default function ChatPage(props) {
       </div>
 
       {/* Chat messages */}
-      <div className="chat-messages">
-        <div className="message-list">
+      <div 
+        style={{
+          flex: 1,
+          padding: '1.5rem',
+          overflowY: 'auto',
+          background: 'linear-gradient(to bottom, rgba(13, 13, 27, 0.7), rgba(26, 26, 50, 0.7))',
+          paddingBottom: '80px'
+        }}
+      >
+        <div 
+          style={{
+            maxWidth: '850px',
+            margin: '0 auto'
+          }}
+        >
           {!chatQuery.data || chatQuery.data.messages.length === 0 ? (
-            <div className="empty-chat">
-              <div className="empty-chat-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '100%',
+              textAlign: 'center',
+              padding: '2rem',
+              marginTop: '20vh'
+            }}>
+              <div style={{
+                width: '5rem',
+                height: '5rem',
+                background: 'rgba(255, 255, 255, 0.05)',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: '1.5rem'
+              }}>
+                <svg xmlns="http://www.w3.org/2000/svg" style={{ width: '2.5rem', height: '2.5rem', color: '#ff4fa7' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
               </div>
-              <h3>Start a conversation</h3>
-              <p>
+              <h3 style={{ fontSize: '1.5rem', color: 'white', marginBottom: '0.75rem' }}>Start a conversation</h3>
+              <p style={{ color: '#9ca3af' }}>
                 Say hello to {character.name} and start chatting!
               </p>
             </div>
@@ -256,10 +324,27 @@ export default function ChatPage(props) {
             chatQuery.data.messages.map((message) => (
               <div
                 key={message.id}
-                className={`message message-${message.role}`}
+                style={{
+                  display: 'flex',
+                  marginBottom: '1.5rem',
+                  justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start'
+                }}
               >
-                <div className="message-bubble">
-                  <p>{message.content}</p>
+                <div
+                  style={{
+                    maxWidth: '80%',
+                    padding: '1rem 1.25rem',
+                    borderRadius: message.role === 'user' ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
+                    background: message.role === 'user' 
+                      ? 'linear-gradient(45deg, #ff4fa7, #7e3aed)' 
+                      : 'rgba(255, 255, 255, 0.05)',
+                    color: message.role === 'user' ? 'white' : '#e5e7eb',
+                    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+                    backdropFilter: message.role === 'user' ? 'none' : 'blur(10px)',
+                    border: message.role === 'user' ? 'none' : '1px solid rgba(255, 255, 255, 0.05)'
+                  }}
+                >
+                  <p style={{ whiteSpace: 'pre-wrap' }}>{message.content}</p>
                 </div>
               </div>
             ))
@@ -267,24 +352,86 @@ export default function ChatPage(props) {
 
           {/* Display images */}
           {chatQuery.data?.images && chatQuery.data.images.map((image) => (
-            <div key={image.id} className="message message-assistant">
-              <div className="message-bubble">
+            <div 
+              key={image.id} 
+              style={{
+                display: 'flex',
+                justifyContent: 'flex-start',
+                marginBottom: '1.5rem'
+              }}
+            >
+              <div
+                style={{
+                  maxWidth: '80%',
+                  padding: '0.5rem',
+                  borderRadius: '18px',
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)'
+                }}
+              >
                 <img
                   src={image.url}
                   alt={image.prompt}
-                  className="message-image"
+                  style={{
+                    maxWidth: '100%',
+                    borderRadius: '12px',
+                    marginBottom: '0.5rem'
+                  }}
                 />
+                <p style={{
+                  fontSize: '0.75rem',
+                  color: '#9ca3af',
+                  margin: '0 0.5rem'
+                }}>
+                  Generated from: {image.prompt}
+                </p>
               </div>
             </div>
           ))}
 
           {isSubmitting && (
-            <div className="message message-assistant">
-              <div className="message-bubble">
-                <div className="loading">
-                  <span></span>
-                  <span></span>
-                  <span></span>
+            <div 
+              style={{
+                display: 'flex',
+                justifyContent: 'flex-start',
+                marginBottom: '1.5rem'
+              }}
+            >
+              <div
+                style={{
+                  padding: '1rem 1.25rem',
+                  borderRadius: '18px 18px 18px 4px',
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)'
+                }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    gap: '0.5rem'
+                  }}
+                >
+                  <div style={{
+                    width: '0.5rem',
+                    height: '0.5rem',
+                    borderRadius: '50%',
+                    background: '#6b7280',
+                    animation: 'bounce 1.2s ease-in-out 0s infinite'
+                  }}></div>
+                  <div style={{
+                    width: '0.5rem',
+                    height: '0.5rem',
+                    borderRadius: '50%',
+                    background: '#6b7280',
+                    animation: 'bounce 1.2s ease-in-out 0.2s infinite'
+                  }}></div>
+                  <div style={{
+                    width: '0.5rem',
+                    height: '0.5rem',
+                    borderRadius: '50%',
+                    background: '#6b7280',
+                    animation: 'bounce 1.2s ease-in-out 0.4s infinite'
+                  }}></div>
                 </div>
               </div>
             </div>
@@ -355,6 +502,13 @@ export default function ChatPage(props) {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                console.log('Enter key pressed');
+                handleSendMessage();
+              }
+            }}
             placeholder={`Message ${character?.name || 'AI'}...`}
             style={{
               flex: 1,
@@ -376,18 +530,21 @@ export default function ChatPage(props) {
           
           <button
             type="button"
-            onClick={handleSendMessage}
+            onClick={() => {
+              console.log('Send button clicked directly');
+              handleSendMessage();
+            }}
             disabled={isSubmitting || !input.trim() || !chatId}
             style={{
               width: '44px',
               height: '44px',
               borderRadius: '50%',
-              background: 'linear-gradient(45deg, #ff4fa7, #7e3aed)',
+              background: input.trim() ? 'linear-gradient(45deg, #ff4fa7, #7e3aed)' : 'rgba(255, 255, 255, 0.1)',
               border: 'none',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              cursor: 'pointer',
+              cursor: input.trim() ? 'pointer' : 'default',
               zIndex: 10000
             }}
           >

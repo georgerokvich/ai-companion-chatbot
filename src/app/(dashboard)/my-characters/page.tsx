@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { trpc } from '@/lib/trpc/client';
 
-export default function CharactersPage() {
+export default function MyCharactersPage() {
   const router = useRouter();
   const charactersQuery = trpc.character.getAll.useQuery();
   const deleteCharacter = trpc.character.delete.useMutation({

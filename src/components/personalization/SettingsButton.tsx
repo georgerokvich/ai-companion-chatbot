@@ -52,14 +52,3 @@ export const SettingsButton: React.FC<SettingsButtonProps> = ({
     </>
   );
 };
-
-      {isModalOpen && (
-        <PersonalizationModal 
-          onClose={() => setIsModalOpen(false)} 
-          initialDisplayName={localDisplayName}
-          initialGender={localGender}
-        />
-      )}
-    </>
-  );
-};

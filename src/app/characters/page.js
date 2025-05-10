@@ -3,11 +3,12 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import './characters-page.css';
 
 export default function CharactersPage() {
-  const [characters, setCharacters] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [characters, setCharacters] = useState([]);
 
   // List of available categories
   const categories = [
@@ -19,70 +20,103 @@ export default function CharactersPage() {
     const fetchCharacters = async () => {
       setIsLoading(true);
       
-      // Simulated API call
+      // Simulated API call with realistic images and profiles
       const mockCharacters = [
         {
           id: 'char-1',
-          name: 'Sophia',
-          description: 'A friendly and outgoing AI companion who loves to chat about anything.',
-          avatar: 'https://ui-avatars.com/api/?name=Sophia&background=a855f7&color=fff',
-          category: 'Entertainment',
-        },
-        {
-          id: 'char-2',
-          name: 'Max',
-          description: 'A tech-savvy AI that knows all about computers, programming, and technology.',
-          avatar: 'https://ui-avatars.com/api/?name=Max&background=3b82f6&color=fff',
-          category: 'Education',
-        },
-        {
-          id: 'char-3',
-          name: 'Luna',
-          description: 'A creative and artistic AI who loves discussing art, music, and literature.',
-          avatar: 'https://ui-avatars.com/api/?name=Luna&background=ec4899&color=fff',
+          name: 'Gabriela',
+          age: 27,
+          description: 'Dominican woman living in Miami. Passionate about fashion and design with an eye for aesthetics.',
+          avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
           category: 'Creative',
         },
         {
+          id: 'char-2',
+          name: 'Juliette',
+          age: 28,
+          description: 'Parisian muse and model. Embodies timeless elegance and artistic sensibility from the heart of France.',
+          avatar: 'https://randomuser.me/api/portraits/women/66.jpg',
+          category: 'Creative',
+        },
+        {
+          id: 'char-3',
+          name: 'Mariana',
+          age: 23,
+          description: 'Casino hostess in New Mexico. Excellent at her job and always ready for adventure in the city that never sleeps.',
+          avatar: 'https://randomuser.me/api/portraits/women/79.jpg',
+          category: 'Entertainment',
+        },
+        {
           id: 'char-4',
-          name: 'Professor Wilson',
-          description: 'An intellectual history professor with extensive knowledge of world events and philosophical debates.',
-          avatar: 'https://ui-avatars.com/api/?name=Prof+Wilson&background=f59e0b&color=fff',
+          name: 'Dr. Wilson',
+          age: 52,
+          description: 'History professor with extensive knowledge of world events and philosophical debates throughout centuries.',
+          avatar: 'https://randomuser.me/api/portraits/men/42.jpg',
           category: 'Philosophy',
         },
         {
           id: 'char-5',
           name: 'Chef Marco',
-          description: 'A passionate culinary expert who can guide you through recipes and share cooking secrets.',
-          avatar: 'https://ui-avatars.com/api/?name=Chef+Marco&background=10b981&color=fff',
+          age: 39,
+          description: 'Passionate culinary expert who guides you through recipes and shares cooking secrets from around the world.',
+          avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
           category: 'Cooking',
         },
         {
           id: 'char-6',
           name: 'Nova',
-          description: 'A sci-fi enthusiast and astronomy buff who loves discussing space, technology, and futuristic concepts.',
-          avatar: 'https://ui-avatars.com/api/?name=Nova&background=6366f1&color=fff',
+          age: 31,
+          description: 'Sci-fi enthusiast and astronomy buff who loves discussing space and futuristic concepts beyond our imagination.',
+          avatar: 'https://randomuser.me/api/portraits/women/91.jpg',
           category: 'Science',
         },
         {
           id: 'char-7',
-          name: 'Coach Alex',
-          description: 'A motivational fitness coach who helps with workout routines and maintaining a healthy lifestyle.',
-          avatar: 'https://ui-avatars.com/api/?name=Coach+Alex&background=22c55e&color=fff',
-          category: 'Health',
+          name: 'Zahara',
+          age: 32,
+          description: 'Charismatic woman and biker, riding her Harley Davidson through the countryside and exploring open roads.',
+          avatar: 'https://randomuser.me/api/portraits/women/18.jpg',
+          category: 'Entertainment',
         },
         {
           id: 'char-8',
           name: 'Maya',
-          description: 'A meditation guide and mindfulness expert to help you find peace and reduce stress.',
-          avatar: 'https://ui-avatars.com/api/?name=Maya&background=8b5cf6&color=fff',
+          age: 35,
+          description: 'Meditation guide and mindfulness expert to help you find peace and reduce stress in your daily life.',
+          avatar: 'https://randomuser.me/api/portraits/women/26.jpg',
           category: 'Meditation',
         },
         {
           id: 'char-9',
-          name: 'Detective Morris',
-          description: 'A sharp-witted detective with a knack for solving mysteries and discussing true crime.',
-          avatar: 'https://ui-avatars.com/api/?name=Det+Morris&background=ef4444&color=fff',
-          category: 'Entertainment',
+          name: 'Alexa',
+          age: 26,
+          description: 'Lifestyle social media influencer with bold makeup looks and fashion sense that sets trends.',
+          avatar: 'https://randomuser.me/api/portraits/women/62.jpg',
+          category: 'Creative',
+        },
+        {
+          id: 'char-10',
+          name: 'Coach Alex',
+          age: 34,
+          description: 'Motivational fitness coach who helps with workout routines and maintaining a healthy lifestyle year-round.',
+          avatar: 'https://randomuser.me/api/portraits/men/83.jpg',
+          category: 'Health',
+        },
+        {
+          id: 'char-11',
+          name: 'Dr. Maxwell',
+          age: 45,
+          description: 'Tech visionary and AI researcher with deep knowledge about computing and technology innovations.',
+          avatar: 'https://randomuser.me/api/portraits/men/3.jpg',
+          category: 'Education',
+        },
+        {
+          id: 'char-12',
+          name: 'Camila',
+          age: 23,
+          description: 'Air hostess working on commercial flights, bringing charm and professionalism to the skies worldwide.',
+          avatar: 'https://randomuser.me/api/portraits/women/9.jpg',
+          category: 'Assistant',
         },
       ];
 
@@ -99,7 +133,7 @@ export default function CharactersPage() {
     : characters.filter(char => char.category === selectedCategory);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-950 text-white">
+    <div className="min-h-screen bg-[#0d0d1b] text-white">
       {/* Navbar */}
       <header className="navbar scrolled">
         <div className="container navbar-container">
@@ -130,160 +164,79 @@ export default function CharactersPage() {
         </div>
       </header>
 
-      <div className="container mx-auto px-4 pt-32 pb-16">
-        {/* Header */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="mb-10 text-center"
-        >
-          <h1 className="text-4xl md:text-5xl font-bold mb-4" style={{
-            background: 'linear-gradient(45deg, var(--primary), var(--secondary))',
-            WebkitBackgroundClip: 'text',
-            backgroundClip: 'text',
-            color: 'transparent',
-          }}>
-            Meet Our AI Companions
-          </h1>
-          <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-            Browse our curated library of AI companions, each designed with unique personalities and expertise.
-          </p>
-        </motion.div>
-
-        {/* Category Filter */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="mb-10"
-        >
-          <div className="flex flex-wrap justify-center gap-2 p-1">
-            {categories.map((category, index) => (
-              <motion.button
-                key={category}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: 0.1 + index * 0.05 }}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-                  selectedCategory === category
-                    ? 'bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-white'
-                    : 'bg-gray-800/50 text-gray-300 hover:bg-gray-700/70'
-                }`}
-                onClick={() => setSelectedCategory(category)}
-              >
-                {category}
-              </motion.button>
-            ))}
-          </div>
-        </motion.div>
+      <div className="container mx-auto px-4 pt-24 pb-16">
+        {/* Filter Categories */}
+        <div className="filter-bar">
+          {categories.map((category) => (
+            <button
+              key={category}
+              className={`filter-category ${selectedCategory === category ? 'active' : ''}`}
+              onClick={() => setSelectedCategory(category)}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
 
         {/* Character Grid */}
         {isLoading ? (
           <div className="flex justify-center items-center py-20">
-            <div className="w-12 h-12 border-t-4 border-[var(--primary)] border-solid rounded-full animate-spin"></div>
+            <div className="w-10 h-10 border-t-2 border-[var(--primary)] border-solid rounded-full animate-spin"></div>
           </div>
         ) : (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-          >
+          <div className="characters-grid">
             {filteredCharacters.map((character, index) => (
               <motion.div
                 key={character.id}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.2 + index * 0.05 }}
-                className="character-card relative bg-gray-800/30 rounded-xl overflow-hidden backdrop-blur-sm border border-gray-700/50 hover:border-[var(--primary)]/30 transition-all duration-300 group"
+                transition={{ duration: 0.3, delay: index * 0.05 }}
+                className="character-card"
+                style={{ animationDelay: `${index * 0.05}s` }}
               >
-                <div className="p-5">
-                  <div className="flex gap-4 items-center mb-3">
-                    <div className="w-14 h-14 rounded-full overflow-hidden flex-shrink-0 bg-[var(--primary)]/10 border border-[var(--primary)]/20 p-0.5">
-                      <img 
-                        src={character.avatar} 
-                        alt={character.name} 
-                        className="w-full h-full rounded-full object-cover"
-                      />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-white">{character.name}</h3>
-                      <span className="text-sm px-2 py-0.5 rounded-full bg-[var(--primary)]/10 text-[var(--primary)]">
-                        {character.category}
-                      </span>
-                    </div>
+                <img 
+                  src={character.avatar} 
+                  alt={character.name} 
+                />
+                <div className="character-info-overlay">
+                  <div className="flex items-end justify-between">
+                    <h3 className="character-name">{character.name}</h3>
+                    <span className="age-badge">{character.age}</span>
                   </div>
-                  <p className="text-gray-300 text-sm leading-relaxed mb-4">
-                    {character.description}
-                  </p>
+                  <p className="character-description">{character.description}</p>
                   <Link
                     href={`/login?next=/chat/${character.id}`}
-                    className="block w-full py-2 text-center text-white font-medium rounded-lg bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] hover:from-[var(--primary-dark)] hover:to-[var(--secondary-dark)] transition-colors duration-300"
+                    className="character-action-button"
                   >
                     Start Chatting
                   </Link>
                 </div>
               </motion.div>
             ))}
-          </motion.div>
+          </div>
         )}
 
         {/* Empty State */}
         {filteredCharacters.length === 0 && !isLoading && (
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-center p-10 bg-gray-800/30 backdrop-blur-sm rounded-xl border border-gray-700/50 max-w-xl mx-auto"
-          >
+          <div className="text-center p-10 bg-[#1a1a2e]/50 rounded-xl max-w-md mx-auto">
             <svg 
               xmlns="http://www.w3.org/2000/svg" 
-              className="h-12 w-12 mx-auto text-gray-400 mb-4" 
-              fill="none" 
-              viewBox="0 0 24 24" 
-              stroke="currentColor"
+              className="h-10 w-10 mx-auto text-gray-400 mb-3" 
+              viewBox="0 0 20 20" 
+              fill="currentColor"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              <path fillRule="evenodd" d="M10 3a7 7 0 100 14 7 7 0 000-14zm-9 7a9 9 0 1118 0 9 9 0 01-18 0zm9-3a1 1 0 011 1v2a1 1 0 11-2 0V8a1 1 0 011-1zm0 6a1 1 0 100 2 1 1 0 000-2z" clipRule="evenodd" />
             </svg>
-            <h3 className="text-xl font-bold mb-2">No characters found</h3>
-            <p className="text-gray-400 mb-4">No characters available in this category.</p>
+            <h3 className="text-lg font-medium mb-2">No companions found</h3>
+            <p className="text-gray-400 mb-4 text-sm">Try another category or view all companions.</p>
             <button 
               onClick={() => setSelectedCategory("All")}
-              className="px-6 py-2 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-white font-medium rounded-lg"
+              className="px-5 py-2 bg-[var(--primary)] text-white text-sm font-medium rounded-lg"
             >
-              View All Characters
+              View All
             </button>
-          </motion.div>
-        )}
-
-        {/* CTA Section */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="mt-16 text-center"
-        >
-          <div className="max-w-2xl mx-auto p-8 rounded-xl bg-gradient-to-br from-gray-800/20 to-gray-900/20 backdrop-blur-sm border border-gray-700/30">
-            <h2 className="text-2xl md:text-3xl font-bold mb-4" style={{
-              background: 'linear-gradient(45deg, var(--primary), var(--secondary))',
-              WebkitBackgroundClip: 'text',
-              backgroundClip: 'text',
-              color: 'transparent',
-            }}>
-              Ready to start chatting?
-            </h2>
-            <p className="text-gray-300 mb-6">
-              Create an account to start meaningful conversations with our AI companions.
-            </p>
-            <Link
-              href="/register"
-              className="inline-block py-3 px-8 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] hover:from-[var(--primary-dark)] hover:to-[var(--secondary-dark)] text-white font-medium rounded-lg shadow-lg shadow-[var(--primary)]/10 transition-all duration-300"
-            >
-              Create Account
-            </Link>
           </div>
-        </motion.div>
+        )}
       </div>
     </div>
   );

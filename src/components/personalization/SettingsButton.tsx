@@ -35,7 +35,12 @@ export const SettingsButton: React.FC<SettingsButtonProps> = ({
     <>
       <button 
         onClick={() => setIsModalOpen(true)}
-        className="flex items-center space-x-2 px-4 py-2 rounded-md hover:bg-gray-800 transition-colors text-gray-300"
+        className="flex items-center space-x-2 px-4 py-2 rounded-md transition-colors w-full"
+        style={{
+          background: 'linear-gradient(to right, rgba(255, 79, 167, 0.1), rgba(126, 58, 237, 0.1))',
+          border: '1px solid rgba(255, 255, 255, 0.05)',
+          color: 'rgba(255, 255, 255, 0.8)'
+        }}
         aria-label="Personalization settings"
       >
         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">

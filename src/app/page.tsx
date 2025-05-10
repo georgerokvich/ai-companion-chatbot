@@ -53,8 +53,8 @@ const features = [
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z" />
       </svg>
     ),
-    title: 'Customizable Characters',
-    description: 'Create and customize your ideal companion with unique personalities, interests, and appearances.',
+    title: 'Diverse Character Library',
+    description: 'Choose from our extensive library of AI companions with unique personalities, interests, and appearances.',
   },
   {
     icon: (
@@ -244,7 +244,7 @@ export default function HomePage() {
               animate={{ opacity: heroInView ? 1 : 0, y: heroInView ? 0 : 20 }}
               transition={{ duration: 0.6, delay: 0.4 }}
             >
-              Create, customize, and chat with AI characters tailored to your preferences. Experience lifelike conversations and emotional connections.
+              Discover and chat with our curated collection of AI companions. Experience lifelike conversations and emotional connections with expertly designed characters.
             </motion.p>
             
             <motion.div
@@ -283,7 +283,7 @@ export default function HomePage() {
               ) : (
                 <>
                   <Link 
-                    href="/register" 
+                    href="/characters" 
                     className="btn btn-primary glow"
                     style={{
                       position: 'relative',
@@ -292,7 +292,7 @@ export default function HomePage() {
                       pointerEvents: 'auto'
                     }}
                   >
-                    Get Started Free
+                    Browse Characters
                   </Link>
                   <Link 
                     href="/characters" 
@@ -504,14 +504,14 @@ export default function HomePage() {
                 lineHeight: '1.8',
                 marginBottom: '1.5rem' 
               }}>
-                AI Companion is a cutting-edge platform that offers immersive experiences with AI characters. Our mission is to create technology that enhances human connection and provides companionship in our increasingly digital world.
+                AI Companion is a cutting-edge platform that offers immersive experiences with our carefully crafted AI characters. Our mission is to provide engaging, realistic companions that enhance human connection in our increasingly digital world.
               </p>
               <p style={{ 
                 color: 'var(--gray-300)', 
                 lineHeight: '1.8',
                 marginBottom: '1.5rem' 
               }}>
-                Using the latest advancements in artificial intelligence, our platform enables users to create and interact with companions that feel incredibly lifelike and responsive. From casual conversations to deep emotional connections, our AI companions adapt to your preferences and grow with you over time.
+                Using the latest advancements in artificial intelligence, our platform enables users to interact with companions that feel incredibly lifelike and responsive. Our carefully designed characters span various personalities, from helpful assistants to creative muses, each with their own unique expertise and traits.
               </p>
               <p style={{ 
                 color: 'var(--gray-300)', 

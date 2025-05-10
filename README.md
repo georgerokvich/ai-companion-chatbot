@@ -7,7 +7,7 @@ A modern AI companion platform that allows users to create, customize, and chat 
 ## Features
 
 - **User Authentication**: Email + password login using Supabase Auth
-- **Character Creation**: Create, edit, and delete custom AI characters with personalities
+- **Curated Character Library**: Browse and chat with pre-designed AI companions
 - **Chat Interface**: Chat with your characters with persistent messages
 - **Image Generation**: Generate images based on chat context
 - **Modern UI**: Responsive design with animations and transitions

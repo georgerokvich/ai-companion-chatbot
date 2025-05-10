@@ -14,7 +14,7 @@ export default function MyCharactersPage() {
   });
 
   const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to delete this character? This action cannot be undone.')) {
+    if (confirm('Are you sure you want to remove this character from your list? You can always add them back later.')) {
       await deleteCharacter.mutateAsync({ id });
     }
   };
@@ -23,15 +23,6 @@ export default function MyCharactersPage() {
     <div className="flex flex-col w-full h-full p-4 overflow-y-auto md:p-8">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold text-gray-900">Your Characters</h1>
-        <Link
-          href="/characters/new"
-          className="flex items-center px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-purple-500 to-pink-500 rounded-md hover:from-purple-600 hover:to-pink-600"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-          New Character
-        </Link>
       </div>
 
       {charactersQuery.isLoading ? (
@@ -49,15 +40,15 @@ export default function MyCharactersPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold text-gray-700">No Characters Yet</h2>
+          <h2 className="text-2xl font-bold text-gray-700">No Characters Selected</h2>
           <p className="mt-2 mb-6 text-gray-500">
-            Create your first AI companion to start chatting!
+            Browse our library and add characters to your collection!
           </p>
           <Link
-            href="/characters/new"
+            href="/characters"
             className="px-6 py-3 text-white bg-gradient-to-r from-purple-500 to-pink-500 rounded-md hover:from-purple-600 hover:to-pink-600"
           >
-            Create Character
+            Browse Characters
           </Link>
         </div>
       ) : (
@@ -98,7 +89,7 @@ export default function MyCharactersPage() {
                     onClick={() => handleDelete(character.id)}
                     className="px-3 py-1.5 text-sm text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200"
                   >
-                    Delete
+                    Remove
                   </button>
                 </div>
               </div>

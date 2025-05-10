@@ -5,6 +5,7 @@ import { mockCharacters } from '../../mock-data/characters';
 
 export const characterRouter = router({
   // Create a new character
+  // Character creation disabled - only pre-made characters are available
   create: protectedProcedure
     .input(
       z.object({
@@ -15,17 +16,12 @@ export const characterRouter = router({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      return prisma.character.create({
-        data: {
-          ...input,
-          userId: ctx.userId,
-        },
-      });
+      throw new Error('Character creation has been disabled. Only pre-made characters are available.');
     }),
 
   // Get all characters
   getAll: protectedProcedure.query(async ({ ctx }) => {
-    // For demo mode, always return mock characters
+    // Always return mock characters from our pre-made library
     return mockCharacters;
   }),
 
@@ -64,15 +60,13 @@ export const characterRouter = router({
       });
     }),
 
-  // Delete a character
+  // "Delete" a character (remove from favorites/bookmark)
   delete: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      return prisma.character.delete({
-        where: {
-          id: input.id,
-          userId: ctx.userId,
-        },
-      });
+      // In a real app, this would remove the bookmark/favorite
+      // but keep the character in the system
+      console.log(`Removed character ${input.id} from user ${ctx.userId}'s favorites`);
+      return { id: input.id, success: true };
     }),
 });

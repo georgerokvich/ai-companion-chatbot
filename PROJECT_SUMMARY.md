@@ -18,10 +18,10 @@ We've set up a Next.js application with the following features:
 - Registration page
 - Auth middleware for protected routes
 
-### Character Management
-- Character creation form
-- Character listing page
-- Delete character functionality
+### Character Library
+- Curated library of pre-made AI characters
+- Character browsing page with category filters
+- Character details display
 
 ### Chat Interface
 - Chat page with real-time messages

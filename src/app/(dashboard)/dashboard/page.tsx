@@ -25,13 +25,13 @@ export default function DashboardPage() {
           {charactersQuery.isLoading
             ? 'Loading your characters...'
             : charactersQuery.data?.length === 0
-            ? 'Create your first AI companion to start chatting!'
+            ? 'Browse our character library to start chatting!'
             : 'Loading your chat...'}
         </p>
 
         {charactersQuery.data?.length === 0 && (
           <Link
-            href="/characters/new"
+            href="/characters"
             className="btn btn-primary"
             style={{ 
               padding: '1rem 2rem', 
@@ -39,7 +39,7 @@ export default function DashboardPage() {
               margin: '0 auto'
             }}
           >
-            Create Character
+            Browse Characters
           </Link>
         )}
       </div>

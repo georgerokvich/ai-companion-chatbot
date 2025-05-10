@@ -63,8 +63,9 @@
   border-radius: 8px;
   color: var(--gray-300);
   transition: all 0.2s ease;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
   cursor: pointer;
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .sidebar-link:hover, .sidebar-link.active {

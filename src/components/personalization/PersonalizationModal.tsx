@@ -71,28 +71,31 @@ export const PersonalizationModal: React.FC<PersonalizationModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center" 
-         style={{ backgroundColor: 'rgba(0, 0, 0, 0.7)' }}>
+    <div 
+      className="fixed inset-0 z-[9999] flex items-center justify-center"
+      style={{ 
+        background: 'rgba(0, 0, 0, 0.7)',
+        backdropFilter: 'blur(5px)'
+      }}
+    >
       <div 
         ref={modalRef}
-        className="modal-container w-full max-w-xs p-6 rounded-xl shadow-lg animate-fadeIn"
+        className="w-full max-w-md bg-[#14142a] rounded-lg border border-[#2a2a40] shadow-2xl p-6"
         style={{
-          background: 'rgba(12, 12, 23, 0.95)',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          boxShadow: '0 10px 25px rgba(0, 0, 0, 0.5)',
+          maxWidth: '360px',
         }}
       >
-        <h2 className="text-xl font-bold text-white mb-2">
+        <h2 className="text-xl font-bold text-white mb-3">
           {isFirstTime ? 'Personalize Your AI Experience' : 'Edit Your Preferences'}
         </h2>
         
-        <p className="text-xs text-gray-400 mb-4">
+        <p className="text-sm text-gray-300 mb-4">
           It will help to customize your interactions with the AI characters.
         </p>
         
         <div className="space-y-4">
           <div className="space-y-1">
-            <label htmlFor="displayName" className="block text-gray-300 text-xs">
+            <label htmlFor="displayName" className="block text-gray-300 text-sm">
               Your Name
             </label>
             <input
@@ -101,20 +104,25 @@ export const PersonalizationModal: React.FC<PersonalizationModalProps> = ({
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
               placeholder="Your name"
-              className="w-full px-3 py-2 text-sm rounded bg-gray-800 text-white border border-gray-700 focus:outline-none focus:border-purple-500"
+              className="w-full px-3 py-2 text-sm rounded bg-[#1a1a30] text-white border border-[#333345] focus:outline-none focus:border-[#7e3aed]"
             />
           </div>
           
           <div className="space-y-1">
-            <label htmlFor="gender" className="block text-gray-300 text-xs">
+            <label htmlFor="gender" className="block text-gray-300 text-sm">
               Gender
             </label>
             <select
               id="gender"
               value={gender}
               onChange={(e) => setGender(e.target.value)}
-              className="w-full px-3 py-2 text-sm rounded bg-gray-800 text-white border border-gray-700 focus:outline-none focus:border-purple-500 appearance-none"
-              style={{ backgroundImage: "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e\")", backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.5rem center', backgroundSize: '1.5em 1.5em' }}
+              className="w-full px-3 py-2 text-sm rounded bg-[#1a1a30] text-white border border-[#333345] focus:outline-none focus:border-[#7e3aed] appearance-none"
+              style={{ 
+                backgroundImage: "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e\")",
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'right 0.5rem center',
+                backgroundSize: '1.5em 1.5em'
+              }}
             >
               <option value="male">Male</option>
               <option value="female">Female</option>
@@ -127,7 +135,11 @@ export const PersonalizationModal: React.FC<PersonalizationModalProps> = ({
         <button
           onClick={handleSave}
           disabled={isSaving}
-          className="w-full mt-4 py-2 rounded text-sm font-medium text-white bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 focus:outline-none transition"
+          className="w-full mt-5 py-2 rounded text-white font-medium"
+          style={{ 
+            background: 'linear-gradient(to right, #ff4fa7, #7e3aed)',
+            boxShadow: '0 2px 10px rgba(255, 79, 167, 0.3)'
+          }}
         >
           {isSaving ? 'Saving...' : 'Save'}
         </button>
@@ -135,7 +147,7 @@ export const PersonalizationModal: React.FC<PersonalizationModalProps> = ({
         {!isFirstTime && (
           <button
             onClick={onClose}
-            className="w-full mt-2 py-2 rounded text-sm font-medium text-gray-300 bg-transparent border border-gray-700 hover:bg-gray-800 focus:outline-none transition"
+            className="w-full mt-3 py-2 rounded text-gray-300 bg-[#1a1a30] border border-[#333345] font-medium"
           >
             Cancel
           </button>

@@ -11,7 +11,7 @@ export const OnboardingCheck = () => {
   const { data: userData, isLoading } = trpc.user.getPreferences.useQuery();
   
   useEffect(() => {
-    // Wait a moment before showing the modal to prevent layout shifts
+    // Set a timeout to prevent immediate modal opening
     const timer = setTimeout(() => {
       // First check if there are preferences in local storage
       const storedPreferences = getUserPreferencesFromStorage();
@@ -25,21 +25,22 @@ export const OnboardingCheck = () => {
       if (!isLoading && userData && !userData.hasCompletedOnboarding) {
         setShowModal(true);
       }
-    }, 800);
+    }, 1000);
     
     return () => clearTimeout(timer);
   }, [userData, isLoading]);
   
-  if (isLoading || !showModal) {
+  // Don't render anything until we've checked preferences
+  if (isLoading) {
     return null;
   }
   
-  return (
+  return showModal ? (
     <PersonalizationModal
       onClose={() => setShowModal(false)}
       initialDisplayName={userData?.displayName || ''}
       initialGender={userData?.gender || 'unspecified'}
       isFirstTime={true}
     />
-  );
+  ) : null;
 };

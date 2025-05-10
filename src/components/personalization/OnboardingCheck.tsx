@@ -11,18 +11,23 @@ export const OnboardingCheck = () => {
   const { data: userData, isLoading } = trpc.user.getPreferences.useQuery();
   
   useEffect(() => {
-    // First check if there are preferences in local storage
-    const storedPreferences = getUserPreferencesFromStorage();
+    // Wait a moment before showing the modal to prevent layout shifts
+    const timer = setTimeout(() => {
+      // First check if there are preferences in local storage
+      const storedPreferences = getUserPreferencesFromStorage();
+      
+      if (storedPreferences && storedPreferences.hasCompletedOnboarding) {
+        // If we have completed onboarding in local storage, don't show modal
+        return;
+      }
+      
+      // Otherwise, check the server data
+      if (!isLoading && userData && !userData.hasCompletedOnboarding) {
+        setShowModal(true);
+      }
+    }, 800);
     
-    if (storedPreferences && storedPreferences.hasCompletedOnboarding) {
-      // If we have completed onboarding in local storage, don't show modal
-      return;
-    }
-    
-    // Otherwise, check the server data
-    if (!isLoading && userData && !userData.hasCompletedOnboarding) {
-      setShowModal(true);
-    }
+    return () => clearTimeout(timer);
   }, [userData, isLoading]);
   
   if (isLoading || !showModal) {

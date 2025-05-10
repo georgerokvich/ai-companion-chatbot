@@ -70,19 +70,25 @@ export const PersonalizationModal: React.FC<PersonalizationModalProps> = ({
     }
   };
 
-  return (
+  return createPortal(
     <div 
       className="fixed inset-0 z-[9999] flex items-center justify-center"
       style={{ 
         background: 'rgba(0, 0, 0, 0.7)',
-        backdropFilter: 'blur(5px)'
+        backdropFilter: 'blur(5px)',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0
       }}
     >
       <div 
         ref={modalRef}
-        className="w-full max-w-md bg-[#14142a] rounded-lg border border-[#2a2a40] shadow-2xl p-6"
+        className="w-full max-w-md bg-[#14142a] rounded-lg border border-[#2a2a40] shadow-2xl p-6 animate-fadeIn"
         style={{
           maxWidth: '360px',
+          margin: 'auto'
         }}
       >
         <h2 className="text-xl font-bold text-white mb-3">
@@ -153,6 +159,10 @@ export const PersonalizationModal: React.FC<PersonalizationModalProps> = ({
           </button>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
+
+// Import createPortal from 'react-dom' at the top of your file
+import { createPortal } from 'react-dom';

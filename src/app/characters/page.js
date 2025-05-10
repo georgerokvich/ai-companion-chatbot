@@ -1,26 +1,25 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-
-// Define character categories
-const categories = [
-  "All", "Assistant", "Education", "Creative", "Health", 
-  "Philosophy", "Entertainment", "Cooking", "Science", "Meditation"
-];
 
 export default function CharactersPage() {
   const [characters, setCharacters] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("All");
 
-  // Fetch the mock characters (simulating an API call)
+  // List of available categories
+  const categories = [
+    "All", "Assistant", "Education", "Creative", "Health", 
+    "Philosophy", "Entertainment", "Cooking", "Science", "Meditation"
+  ];
+
   useEffect(() => {
     const fetchCharacters = async () => {
       setIsLoading(true);
       
-      // Simulated API call - these would come from a real backend in production
+      // Simulated API call
       const mockCharacters = [
         {
           id: 'char-1',
@@ -99,29 +98,8 @@ export default function CharactersPage() {
     ? characters 
     : characters.filter(char => char.category === selectedCategory);
 
-  // Animation variants for staggered animations
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1,
-      transition: { 
-        staggerChildren: 0.1,
-        delayChildren: 0.2
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: { 
-      y: 0, 
-      opacity: 1,
-      transition: { type: "spring", stiffness: 100 }
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-950 text-white pb-16">
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-950 text-white">
       {/* Navbar */}
       <header className="navbar scrolled">
         <div className="container navbar-container">
@@ -152,116 +130,98 @@ export default function CharactersPage() {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32">
+      <div className="container mx-auto px-4 pt-32 pb-16">
+        {/* Header */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="mb-16 text-center"
+          transition={{ duration: 0.5 }}
+          className="mb-10 text-center"
         >
-          <h1 className="text-5xl font-bold mb-6" style={{
+          <h1 className="text-4xl md:text-5xl font-bold mb-4" style={{
             background: 'linear-gradient(45deg, var(--primary), var(--secondary))',
             WebkitBackgroundClip: 'text',
             backgroundClip: 'text',
             color: 'transparent',
           }}>
-            Our AI Companions
+            Meet Our AI Companions
           </h1>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-            Explore our curated collection of AI companions, each with unique personalities and expertise.
+          <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+            Browse our curated library of AI companions, each designed with unique personalities and expertise.
           </p>
         </motion.div>
 
-        {/* Stylish Category Filter */}
+        {/* Category Filter */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="relative mb-12"
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="mb-10"
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-xl blur-xl"></div>
-          <div className="relative bg-gray-900/40 backdrop-blur-md rounded-xl p-4 border border-gray-800">
-            <div className="flex flex-wrap justify-center gap-2">
-              {categories.map((category) => (
-                <button
-                  key={category}
-                  className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all ${
-                    selectedCategory === category
-                      ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-lg shadow-primary/20'
-                      : 'bg-gray-800/80 text-gray-300 hover:bg-gray-700/80 hover:text-white'
-                  }`}
-                  onClick={() => setSelectedCategory(category)}
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
+          <div className="flex flex-wrap justify-center gap-2 p-1">
+            {categories.map((category, index) => (
+              <motion.button
+                key={category}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.1 + index * 0.05 }}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+                  selectedCategory === category
+                    ? 'bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-white'
+                    : 'bg-gray-800/50 text-gray-300 hover:bg-gray-700/70'
+                }`}
+                onClick={() => setSelectedCategory(category)}
+              >
+                {category}
+              </motion.button>
+            ))}
           </div>
         </motion.div>
 
+        {/* Character Grid */}
         {isLoading ? (
           <div className="flex justify-center items-center py-20">
-            <div className="w-12 h-12 border-t-4 border-primary border-solid rounded-full animate-spin"></div>
+            <div className="w-12 h-12 border-t-4 border-[var(--primary)] border-solid rounded-full animate-spin"></div>
           </div>
         ) : (
           <motion.div 
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
           >
-            {filteredCharacters.map((character) => (
+            {filteredCharacters.map((character, index) => (
               <motion.div
                 key={character.id}
-                variants={itemVariants}
-                className="relative group"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.2 + index * 0.05 }}
+                className="character-card relative bg-gray-800/30 rounded-xl overflow-hidden backdrop-blur-sm border border-gray-700/50 hover:border-[var(--primary)]/30 transition-all duration-300 group"
               >
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-pink-500/30 to-purple-500/30 rounded-2xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div className="relative bg-gray-900/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-800/50 overflow-hidden group-hover:border-gray-700/70 transition-all">
-                  <div className="absolute -right-16 -top-16 w-32 h-32 bg-gradient-to-br from-primary/40 to-secondary/40 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                  
-                  <div className="flex items-center gap-4 mb-4 relative">
-                    <div className="relative flex-shrink-0">
-                      <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary blur-sm rounded-full opacity-0 group-hover:opacity-70 -m-0.5 transition-opacity duration-300"></div>
-                      <img
-                        src={character.avatar}
-                        alt={character.name}
-                        className="relative w-16 h-16 rounded-full object-cover border-2 border-transparent group-hover:border-white/20 transition-all"
+                <div className="p-5">
+                  <div className="flex gap-4 items-center mb-3">
+                    <div className="w-14 h-14 rounded-full overflow-hidden flex-shrink-0 bg-[var(--primary)]/10 border border-[var(--primary)]/20 p-0.5">
+                      <img 
+                        src={character.avatar} 
+                        alt={character.name} 
+                        className="w-full h-full rounded-full object-cover"
                       />
                     </div>
                     <div>
                       <h3 className="text-xl font-bold text-white">{character.name}</h3>
-                      <span className="inline-block px-3 py-1 text-xs rounded-full bg-gradient-to-r from-primary/20 to-secondary/20 text-primary-dark group-hover:from-primary/30 group-hover:to-secondary/30 transition-colors">
+                      <span className="text-sm px-2 py-0.5 rounded-full bg-[var(--primary)]/10 text-[var(--primary)]">
                         {character.category}
                       </span>
                     </div>
                   </div>
-                  
-                  <p className="text-gray-300 mb-6 leading-relaxed">{character.description}</p>
-                  
+                  <p className="text-gray-300 text-sm leading-relaxed mb-4">
+                    {character.description}
+                  </p>
                   <Link
                     href={`/login?next=/chat/${character.id}`}
-                    className="relative block w-full py-3 px-6 text-center font-medium rounded-xl overflow-hidden group-hover:shadow-lg group-hover:shadow-primary/20 transition-all"
+                    className="block w-full py-2 text-center text-white font-medium rounded-lg bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] hover:from-[var(--primary-dark)] hover:to-[var(--secondary-dark)] transition-colors duration-300"
                   >
-                    <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-primary to-secondary"></span>
-                    <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-primary-dark to-secondary-dark opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                    <span className="relative flex items-center justify-center gap-2">
-                      <svg 
-                        xmlns="http://www.w3.org/2000/svg" 
-                        className="h-5 w-5" 
-                        fill="none" 
-                        viewBox="0 0 24 24" 
-                        stroke="currentColor"
-                      >
-                        <path 
-                          strokeLinecap="round" 
-                          strokeLinejoin="round" 
-                          strokeWidth={2} 
-                          d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" 
-                        />
-                      </svg>
-                      Start Chatting
-                    </span>
+                    Start Chatting
                   </Link>
                 </div>
               </motion.div>
@@ -269,65 +229,59 @@ export default function CharactersPage() {
           </motion.div>
         )}
 
+        {/* Empty State */}
         {filteredCharacters.length === 0 && !isLoading && (
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center py-16 bg-gray-900/30 backdrop-blur-sm rounded-2xl border border-gray-800/50"
+            transition={{ duration: 0.5 }}
+            className="text-center p-10 bg-gray-800/30 backdrop-blur-sm rounded-xl border border-gray-700/50 max-w-xl mx-auto"
           >
             <svg 
               xmlns="http://www.w3.org/2000/svg" 
-              className="h-16 w-16 mx-auto text-gray-500 mb-4" 
+              className="h-12 w-12 mx-auto text-gray-400 mb-4" 
               fill="none" 
               viewBox="0 0 24 24" 
               stroke="currentColor"
             >
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth={1.5} 
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" 
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
             </svg>
-            <p className="text-2xl font-medium text-gray-300 mb-4">No characters found in this category</p>
-            <p className="text-gray-400 mb-6 max-w-md mx-auto">We couldn't find any companions matching this filter. Try another category.</p>
+            <h3 className="text-xl font-bold mb-2">No characters found</h3>
+            <p className="text-gray-400 mb-4">No characters available in this category.</p>
             <button 
               onClick={() => setSelectedCategory("All")}
-              className="px-6 py-2.5 bg-gradient-to-r from-primary to-secondary text-white font-medium rounded-full shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-shadow"
+              className="px-6 py-2 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-white font-medium rounded-lg"
             >
               View All Characters
             </button>
           </motion.div>
         )}
 
+        {/* CTA Section */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-20 text-center"
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="mt-16 text-center"
         >
-          <div className="relative max-w-3xl mx-auto">
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 blur-xl rounded-2xl"></div>
-            <div className="relative bg-gray-900/60 backdrop-blur-md p-8 rounded-2xl border border-gray-800/50">
-              <h2 className="text-3xl font-bold mb-4" style={{
-                background: 'linear-gradient(45deg, var(--primary), var(--secondary))',
-                WebkitBackgroundClip: 'text',
-                backgroundClip: 'text',
-                color: 'transparent',
-              }}>
-                Ready to Start Chatting?
-              </h2>
-              <p className="text-xl text-gray-300 mb-6">
-                Sign up now to start conversations with our AI companions and explore a world of engaging interactions.
-              </p>
-              <Link
-                href="/register"
-                className="inline-block py-3 px-8 bg-gradient-to-r from-primary to-secondary hover:from-primary-dark hover:to-secondary-dark text-white font-medium rounded-xl shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all"
-              >
-                Create Your Account
-              </Link>
-            </div>
+          <div className="max-w-2xl mx-auto p-8 rounded-xl bg-gradient-to-br from-gray-800/20 to-gray-900/20 backdrop-blur-sm border border-gray-700/30">
+            <h2 className="text-2xl md:text-3xl font-bold mb-4" style={{
+              background: 'linear-gradient(45deg, var(--primary), var(--secondary))',
+              WebkitBackgroundClip: 'text',
+              backgroundClip: 'text',
+              color: 'transparent',
+            }}>
+              Ready to start chatting?
+            </h2>
+            <p className="text-gray-300 mb-6">
+              Create an account to start meaningful conversations with our AI companions.
+            </p>
+            <Link
+              href="/register"
+              className="inline-block py-3 px-8 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] hover:from-[var(--primary-dark)] hover:to-[var(--secondary-dark)] text-white font-medium rounded-lg shadow-lg shadow-[var(--primary)]/10 transition-all duration-300"
+            >
+              Create Account
+            </Link>
           </div>
         </motion.div>
       </div>

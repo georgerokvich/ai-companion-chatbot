@@ -7,18 +7,17 @@ import { getUserPreferencesFromStorage } from '@/lib/utils/storage';
 
 export const OnboardingCheck = () => {
   const [showModal, setShowModal] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false);
   
   const { data: userData, isLoading } = trpc.user.getPreferences.useQuery();
   
-  // Set mounted state
+  // Handle client-side only code
   useEffect(() => {
-    setIsMounted(true);
-    return () => setIsMounted(false);
+    setHasMounted(true);
   }, []);
   
   useEffect(() => {
-    if (!isMounted) return;
+    if (!hasMounted) return;
     
     // Set a timeout to prevent immediate modal opening
     const timer = setTimeout(() => {
@@ -37,19 +36,22 @@ export const OnboardingCheck = () => {
     }, 1000);
     
     return () => clearTimeout(timer);
-  }, [userData, isLoading, isMounted]);
+  }, [userData, isLoading, hasMounted]);
   
-  // Don't render anything until we've checked preferences or if component is not mounted
-  if (isLoading || !isMounted) {
+  if (!hasMounted || isLoading) {
     return null;
   }
   
-  return showModal ? (
+  if (!showModal) {
+    return null;
+  }
+  
+  return (
     <PersonalizationModal
       onClose={() => setShowModal(false)}
       initialDisplayName={userData?.displayName || ''}
       initialGender={userData?.gender || 'unspecified'}
       isFirstTime={true}
     />
-  ) : null;
+  );
 };

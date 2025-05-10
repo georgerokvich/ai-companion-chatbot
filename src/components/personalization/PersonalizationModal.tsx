@@ -52,6 +52,18 @@ export const PersonalizationModal: React.FC<PersonalizationModalProps> = ({
     };
   }, [onClose, isFirstTime]);
 
+  // Prevent body scrolling when modal is open
+  useEffect(() => {
+    // Save the original overflow style
+    const originalStyle = window.getComputedStyle(document.body).overflow;
+    // Prevent scrolling on mount
+    document.body.style.overflow = 'hidden';
+    // Re-enable scrolling on unmount
+    return () => {
+      document.body.style.overflow = originalStyle;
+    };
+  }, []);
+
   const handleSave = async () => {
     setIsSaving(true);
     try {
@@ -70,38 +82,53 @@ export const PersonalizationModal: React.FC<PersonalizationModalProps> = ({
     }
   };
 
-  return createPortal(
+  return (
     <div 
-      className="fixed inset-0 z-[9999] flex items-center justify-center"
+      id="personalization-modal-overlay"
       style={{ 
-        background: 'rgba(0, 0, 0, 0.7)',
-        backdropFilter: 'blur(5px)',
         position: 'fixed',
         top: 0,
         left: 0,
         right: 0,
-        bottom: 0
+        bottom: 0,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 9999,
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+        backdropFilter: 'blur(5px)',
+        padding: '1rem'
       }}
     >
       <div 
         ref={modalRef}
-        className="w-full max-w-md bg-[#14142a] rounded-lg border border-[#2a2a40] shadow-2xl p-6 animate-fadeIn"
+        id="personalization-modal-content"
         style={{
           maxWidth: '360px',
-          margin: 'auto'
+          width: '100%',
+          backgroundColor: '#14142a',
+          borderRadius: '0.5rem',
+          border: '1px solid #2a2a40',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+          padding: '1.5rem',
+          margin: '0 auto',
+          animation: 'fadeIn 0.3s ease-out'
         }}
       >
-        <h2 className="text-xl font-bold text-white mb-3">
+        <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'white', marginBottom: '0.75rem' }}>
           {isFirstTime ? 'Personalize Your AI Experience' : 'Edit Your Preferences'}
         </h2>
         
-        <p className="text-sm text-gray-300 mb-4">
+        <p style={{ fontSize: '0.875rem', color: '#d1d5db', marginBottom: '1rem' }}>
           It will help to customize your interactions with the AI characters.
         </p>
         
-        <div className="space-y-4">
-          <div className="space-y-1">
-            <label htmlFor="displayName" className="block text-gray-300 text-sm">
+        <div style={{ marginBottom: '1.25rem' }}>
+          <div style={{ marginBottom: '1rem' }}>
+            <label 
+              htmlFor="displayName" 
+              style={{ display: 'block', color: '#d1d5db', fontSize: '0.875rem', marginBottom: '0.25rem' }}
+            >
               Your Name
             </label>
             <input
@@ -110,41 +137,91 @@ export const PersonalizationModal: React.FC<PersonalizationModalProps> = ({
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
               placeholder="Your name"
-              className="w-full px-3 py-2 text-sm rounded bg-[#1a1a30] text-white border border-[#333345] focus:outline-none focus:border-[#7e3aed]"
+              style={{ 
+                width: '100%', 
+                padding: '0.5rem 0.75rem', 
+                fontSize: '0.875rem', 
+                borderRadius: '0.25rem',
+                backgroundColor: '#1a1a30',
+                color: 'white',
+                border: '1px solid #333345',
+                outline: 'none'
+              }}
             />
           </div>
           
-          <div className="space-y-1">
-            <label htmlFor="gender" className="block text-gray-300 text-sm">
+          <div>
+            <label 
+              htmlFor="gender" 
+              style={{ display: 'block', color: '#d1d5db', fontSize: '0.875rem', marginBottom: '0.25rem' }}
+            >
               Gender
             </label>
-            <select
-              id="gender"
-              value={gender}
-              onChange={(e) => setGender(e.target.value)}
-              className="w-full px-3 py-2 text-sm rounded bg-[#1a1a30] text-white border border-[#333345] focus:outline-none focus:border-[#7e3aed] appearance-none"
-              style={{ 
-                backgroundImage: "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e\")",
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition: 'right 0.5rem center',
-                backgroundSize: '1.5em 1.5em'
-              }}
-            >
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="other">Other</option>
-              <option value="unspecified">Prefer not to say</option>
-            </select>
+            <div style={{ position: 'relative' }}>
+              <select
+                id="gender"
+                value={gender}
+                onChange={(e) => setGender(e.target.value)}
+                style={{ 
+                  width: '100%', 
+                  padding: '0.5rem 0.75rem', 
+                  fontSize: '0.875rem', 
+                  borderRadius: '0.25rem',
+                  backgroundColor: '#1a1a30',
+                  color: 'white',
+                  border: '1px solid #333345',
+                  outline: 'none',
+                  appearance: 'none',
+                  paddingRight: '2rem'
+                }}
+              >
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+                <option value="unspecified">Prefer not to say</option>
+              </select>
+              <div style={{ 
+                position: 'absolute',
+                top: '50%',
+                right: '0.75rem',
+                transform: 'translateY(-50%)',
+                pointerEvents: 'none'
+              }}>
+                <svg 
+                  width="12" 
+                  height="12" 
+                  viewBox="0 0 12 12" 
+                  fill="none" 
+                  xmlns="http://www.w3.org/2000/svg"
+                  style={{ color: '#9ca3af' }}
+                >
+                  <path 
+                    d="M2 4L6 8L10 4" 
+                    stroke="currentColor" 
+                    strokeWidth="1.5" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
+            </div>
           </div>
         </div>
         
         <button
           onClick={handleSave}
           disabled={isSaving}
-          className="w-full mt-5 py-2 rounded text-white font-medium"
           style={{ 
+            width: '100%', 
+            padding: '0.5rem 0',
+            borderRadius: '0.25rem',
+            color: 'white',
+            fontWeight: '500',
             background: 'linear-gradient(to right, #ff4fa7, #7e3aed)',
-            boxShadow: '0 2px 10px rgba(255, 79, 167, 0.3)'
+            border: 'none',
+            cursor: isSaving ? 'default' : 'pointer',
+            opacity: isSaving ? 0.7 : 1,
+            marginBottom: '0.5rem'
           }}
         >
           {isSaving ? 'Saving...' : 'Save'}
@@ -153,16 +230,21 @@ export const PersonalizationModal: React.FC<PersonalizationModalProps> = ({
         {!isFirstTime && (
           <button
             onClick={onClose}
-            className="w-full mt-3 py-2 rounded text-gray-300 bg-[#1a1a30] border border-[#333345] font-medium"
+            style={{ 
+              width: '100%', 
+              padding: '0.5rem 0',
+              borderRadius: '0.25rem',
+              color: '#d1d5db',
+              fontWeight: '500',
+              backgroundColor: '#1a1a30',
+              border: '1px solid #333345',
+              cursor: 'pointer'
+            }}
           >
             Cancel
           </button>
         )}
       </div>
-    </div>,
-    document.body
+    </div>
   );
 };
-
-// Import createPortal from 'react-dom' at the top of your file
-import { createPortal } from 'react-dom';

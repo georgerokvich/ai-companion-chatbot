@@ -16,16 +16,15 @@ export const SettingsButton: React.FC<SettingsButtonProps> = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [localDisplayName, setLocalDisplayName] = useState(displayName);
   const [localGender, setLocalGender] = useState(gender);
-  const [isMounted, setIsMounted] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false);
   
-  // Set mounted state
+  // Handle client-side only code
   useEffect(() => {
-    setIsMounted(true);
-    return () => setIsMounted(false);
+    setHasMounted(true);
   }, []);
   
   useEffect(() => {
-    if (!isMounted) return;
+    if (!hasMounted) return;
     
     // Get preferences from local storage
     const storedPreferences = getUserPreferencesFromStorage();
@@ -38,7 +37,7 @@ export const SettingsButton: React.FC<SettingsButtonProps> = ({
         setLocalGender(storedPreferences.gender);
       }
     }
-  }, [isMounted]);
+  }, [hasMounted]);
 
   return (
     <>
@@ -49,7 +48,7 @@ export const SettingsButton: React.FC<SettingsButtonProps> = ({
         <span>Personalization</span>
       </div>
 
-      {isMounted && isModalOpen && (
+      {hasMounted && isModalOpen && (
         <PersonalizationModal 
           onClose={() => setIsModalOpen(false)} 
           initialDisplayName={localDisplayName}

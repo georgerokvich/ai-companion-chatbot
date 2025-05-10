@@ -5,6 +5,8 @@ import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase/client';
 import { trpc } from '@/lib/trpc/client';
+import { SettingsButton } from '@/components/personalization';
+import { useAuth } from '@/lib/hooks/useAuth';
 import './dashboard-style.css';
 
 export default function DashboardLayout({
@@ -14,11 +16,17 @@ export default function DashboardLayout({
 }) {
   const router = useRouter();
   const pathname = usePathname();
+  const { signOut } = useAuth();
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
   const charactersQuery = trpc.character.getAll.useQuery(undefined, {
+    enabled: !!user,
+  });
+  
+  // Get user preferences for personalization
+  const { data: userPreferences } = trpc.user.getPreferences.useQuery(undefined, {
     enabled: !!user,
   });
 
@@ -47,12 +55,11 @@ export default function DashboardLayout({
   }, [router]);
 
   const handleSignOut = async () => {
-    // Clear localStorage for demo mode
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('userEmail');
-    
-    // No need to call Supabase signOut in demo mode
-    router.push('/login');
+    try {
+      await signOut();
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
   };
 
   if (loading) {
@@ -147,6 +154,12 @@ export default function DashboardLayout({
               </svg>
               Home Page
             </Link>
+            
+            {/* Personalization Settings Button */}
+            <SettingsButton 
+              displayName={userPreferences?.displayName || ''}
+              gender={userPreferences?.gender || 'unspecified'}
+            />
           </div>
         </div>
 

@@ -16,6 +16,9 @@ model User {
   email         String      @unique
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
+  displayName   String?
+  gender        String?     @default("unspecified") // "male", "female", "other", "unspecified"
+  hasCompletedOnboarding Boolean @default(false)
   characters    Character[]
   chats         Chat[]
 }

@@ -4,9 +4,11 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { useAuth } from '@/lib/hooks/useAuth';
 
 export default function LoginPage() {
   const router = useRouter();
+  const { signIn } = useAuth();
   const [email, setEmail] = useState('demo@example.com');
   const [password, setPassword] = useState('demopassword');
   const [error, setError] = useState<string | null>(null);
@@ -18,15 +20,8 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      // Demo mode - always successful login
-      localStorage.setItem('isLoggedIn', 'true');
-      localStorage.setItem('userEmail', email);
-      
-      // Simulate API call delay
-      setTimeout(() => {
-        // Redirect to dashboard
-        router.push('/dashboard');
-      }, 1000);
+      // Use the signIn method from our auth hook
+      await signIn(email, password);
     } catch (error: any) {
       setError('Login failed. Please try again.');
       setLoading(false);

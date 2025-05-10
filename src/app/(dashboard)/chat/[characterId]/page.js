@@ -2,6 +2,9 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { OnboardingCheck } from '@/components/personalization';
+import { trpc } from '@/lib/trpc/client';
+import { getUserPreferencesFromStorage } from '@/lib/utils/storage';
 
 export default function ChatPage(props) {
   const characterId = props.params?.characterId || '';
@@ -19,6 +22,20 @@ export default function ChatPage(props) {
     personality: 'Friendly and helpful',
     avatar: null
   });
+  
+  // Get user preferences from tRPC
+  const { data: userPreferences } = trpc.user.getPreferences.useQuery();
+  
+  // Get user preferences from local storage
+  const [localUserPreferences, setLocalUserPreferences] = useState(null);
+  
+  useEffect(() => {
+    // Get preferences from local storage
+    const storedPreferences = getUserPreferencesFromStorage();
+    if (storedPreferences) {
+      setLocalUserPreferences(storedPreferences);
+    }
+  }, []);
 
   // Handle direct navigation to /chat without character ID
   useEffect(() => {
@@ -100,40 +117,44 @@ export default function ChatPage(props) {
       // Add to messages immediately
       setMessages(prevMessages => [...prevMessages, userMessage]);
       
-      // Simulate AI thinking and response
-      setTimeout(() => {
-        // AI response options
-        const responses = [
-          "I'm happy to chat with you! How can I make your day better?",
-          "That's an interesting thought. Tell me more about it!",
-          "I've been thinking about that too. What do you think?",
-          "I love your perspective on things. You're really insightful!",
-          "That's fascinating! I'd love to explore this idea more with you."
-        ];
-        
-        // Select random response
-        const responseIndex = Math.floor(Math.random() * responses.length);
-        const aiResponse = responses[responseIndex];
-        
-        // Create AI message
-        const aiMessage = {
-          id: generateId(),
-          content: aiResponse,
-          role: 'assistant',
-          timestamp: new Date().toISOString()
-        };
-        
-        // Add AI message to chat
-        setMessages(prevMessages => [...prevMessages, aiMessage]);
-        
-        // Reset submitting state
-        setIsSubmitting(false);
-        
-        // Focus input for next message
-        if (inputRef.current) {
-          inputRef.current.focus();
-        }
-      }, 1000);
+      // In a real implementation, this would call the API
+      // For demo, we'll simulate an API call
+      fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          input: messageText,
+          character,
+          userPreferences: localUserPreferences || userPreferences || null
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          // Create AI message
+          const aiMessage = {
+            id: generateId(),
+            content: data.reply,
+            role: 'assistant',
+            timestamp: new Date().toISOString()
+          };
+          
+          // Add AI message to chat
+          setMessages(prevMessages => [...prevMessages, aiMessage]);
+          
+          // Reset submitting state
+          setIsSubmitting(false);
+          
+          // Focus input for next message
+          if (inputRef.current) {
+            inputRef.current.focus();
+          }
+        })
+        .catch((error) => {
+          console.error('Error sending message:', error);
+          setIsSubmitting(false);
+        });
     } catch (error) {
       console.error('Error sending message:', error);
       setIsSubmitting(false);
@@ -181,6 +202,8 @@ export default function ChatPage(props) {
       background: '#0d0d1b',
       position: 'relative'
     }}>
+      {/* Personalization Onboarding Check */}
+      <OnboardingCheck />
       {/* Chat header */}
       <div style={{
         display: 'flex',
